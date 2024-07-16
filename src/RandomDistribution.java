@@ -2,8 +2,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomDistribution {
-    private int numPairs; // total number of elements
-    private int maxVolume;
+    private final int numPairs; // total number of elements
+    private final int maxVolume;
     ArrayList<Integer> distribution; //
 
     public RandomDistribution(int numPairs, int maxVolume) {
