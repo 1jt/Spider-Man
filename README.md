@@ -50,3 +50,31 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     System.out.print(zipf.distribution.get(i) + " ");
 }
 ```
+
+### 3. KeyValueGenerator
+
+用于生成满足随机分布的随机数的类，主要用于后续文档生成。
+
+#### 输入
+
+- `model`：选择模式 (z/r)
+- `numPairs`：键值对的个数
+- `numKeys`：期望的关键词数量 (zipf分布)
+- `maxvolume`：最大值对应的Volume (random分布)
+- `filename`：输出文件名
+
+
+#### 输出
+
+- 根据输入参数，在对应文件夹生成的不同分布数据集
+
+#### 使用示例
+
+```java
+//  char model = 'r'; // 'r' for random, 'z' for zipf
+    char model = 'z';
+    int numPairs = 1024 * 2 * 2 * 2 * 2 * 2; // 键值对的总数
+    int numKeys = numPairs/8; // 键的数量
+    int maxVolume = 16; // 值的最大数量
+    String fileName = "Zipf_15.txt";
+```
