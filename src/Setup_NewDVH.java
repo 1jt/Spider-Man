@@ -1,24 +1,25 @@
+import javafx.css.StyleableObjectProperty;
+import jdk.internal.dynalink.beans.StaticClass;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.ArrayList;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Setup_NewDVH {
+    //    public static ArrayList<TreeNode> Rroots = new ArrayList<>();//测试用，装有所有根节点
+    public static ArrayList<NodeSet> Position = new ArrayList<>();//存储所有NodeSet
 
     public static void Test(String filePath) throws IOException {
-
         int cycle_num = 1;  // 构建次数
 //        System.out.println("----------" + filePath + " starts Setup calculation----------");
         for (int test_num = 0; test_num < cycle_num; test_num++) {
-            int size;
-            int c = 5;
-            int n = Tools.CalculateNumberOfDBEntries(filePath);
-            size = (int) Math.ceil( n / ( (Math.log(n) / Math.log(2)) * c));
-            TreeNode<String>[] roots = Roots.CreateRoots(size);
-            Map<String, MMPoint> MM_cach = new HashMap<String, MMPoint>();
+            int size = NewDVH_Tool.Size(filePath);
+            TreeNode<String>[] roots = Roots.CreateRoots(size);//建立size个根节点
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
             String line;
             String key = null; // 每次读取的关键词
@@ -26,8 +27,6 @@ public class Setup_NewDVH {
             String kappa; // 每个关键词生成的密钥
             int root; // 关键词对应的根节点的编号
 
-            // Setup
-//            System.out.println("-----------------------Setup parse begin-----------------------");
             while ((line = reader.readLine()) != null) {
                 // 读取键值对
                 String[] keyValue = line.split("=");
@@ -38,139 +37,97 @@ public class Setup_NewDVH {
                     System.out.println("Invalid key-value pair: " + line);
                 }
 
-                // MM_cach
-                if(MM_cach.get(key) == null){
-                    MM_cach.put(key,new MMPoint(0,0));
-                }
-
                 // 计算kappa
-                Random rand = new Random();
-                int randnum = rand.nextInt(2);
-                kappa = HashKit.sha1(key + MM_cach.get(key).getX() + randnum);
+                kappa = HashKit.sha1(key + 0 + 1);//这里kappa只用1这一个路径
 
-                // 计算root
-                BigInteger tmp= new BigInteger(kappa, 16);
+                // 计算root编号
+                BigInteger tmp = new BigInteger(kappa, 16);
                 root = tmp.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
 
-                // 如果对应根节点没有初始化，则执行初始化操作，并初始化第二层节点
-                if (roots[root].getData() == null){
+                // 如果对应根节点没有数据，则执行初始化操作
+                if (roots[root].getData() == null) {
                     roots[root].setData(key + "+" + value);
-                    TreeNode<String> node_left = new TreeNode<String>(null);
-                    TreeNode<String> node_right = new TreeNode<String>(null);
-                    if (roots[root].getLeft() == null) {
-                        roots[root].setLeft(node_left);
-                    }
-                    if (roots[root].getRight() == null) {
-                        roots[root].setRight(node_right);
-                    }
-                    if (roots[(root + 1) % size].getLeft() == null) {
-                        roots[(root + 1) % size].setLeft(node_right);
-                    }
-                    if (roots[(root + size -1) % size].getRight() == null) {
-                        roots[(root + size -1) % size].setRight(node_left);
-                    }
-                    continue;
+                    //计算根节点在坐标轴的位置
+                    MMPoint NodePosition = new MMPoint(root, size - 1 - root);
+                    roots[root].setId(NodePosition);
+                    //位置和节点一起存入Nodeset中
+                    NodeSet node_temp = new NodeSet(NodePosition, roots[root]);
+                    Position.add(node_temp);
+                    continue;//开启下一次循环，读取下一个数据
                 }
 
-
-                // 如果不踢
-                TreeNode<String> node_tmp = roots[root];
+                // 根节点已经存在数据
+                TreeNode<String> node_tmp = roots[root];//node_temp表示当前节点
                 int count = 0; // 关键词所在层数
                 boolean flag = false; // 放入成功指示符
                 String input = key + "+" + value;
-//                long test1 = System.nanoTime();
-                while (!flag){
+
+                STOP:
+                while (!flag) {
                     String Pos = HashKit.sha384(kappa + root + count++);
                     BigInteger tmp_2 = new BigInteger(Pos, 16);
                     int pos = tmp_2.divideAndRemainder(BigInteger.valueOf(2))[1].intValue(); // 计算往左还是往右
-                    if (pos == 0){
-                        if (node_tmp.getLeft()!=null){
-                            node_tmp = node_tmp.getLeft();
-                            if(node_tmp.getData() == null){
-                                node_tmp.setData(input);
-                                flag = true;
+                    //往左
+                    if (pos == 0) {
+                        //计算左孩子节点xy坐标
+                        int child_x = node_tmp.getId().getX();
+                        int child_y = node_tmp.getId().getY() + 1;
+                        MMPoint NodePosition = new MMPoint(child_x, child_y);
+
+                        //判断左孩子位置有人不，有人则把该节点变为你的左孩子
+                        //这里可以优化，使用哈希表判断是否xy是否存在，能更快
+                        if (node_tmp.getLeft() == null) {
+                            for (int pos_num = 0; pos_num < Position.size(); pos_num++) {
+                                int aid_x = Position.get(pos_num).getPosition().getX();
+                                int aid_y = Position.get(pos_num).getPosition().getY();
+                                if (aid_x == child_x && aid_y == child_y) {
+                                    node_tmp.setLeft(Position.get(pos_num).getNode());
+                                    node_tmp = node_tmp.getLeft();
+                                    //遍历Position，xy坐标匹配成功表示该位置存在节点，但没有与node_temp建立父子关系
+                                    continue STOP;//跳出大循环，计算下一层位置
+                                }
                             }
-                            continue;
-                        }
-                        else {
+                            //位置没人，建立一个节点，并存入Position中
                             TreeNode<String> node_left = new TreeNode<String>(input);
                             node_tmp.setLeft(node_left);
-                            flag = true;
-
+                            node_tmp.setLeftId(NodePosition);
+                            NodeSet node_cash = new NodeSet(NodePosition, node_left);
+                            Position.add(node_cash);//插入成功，读取下一个数据
+                            break;
+                        } else {
+                            node_tmp = node_tmp.getLeft();//左节点存在数据，当前节点转变为其左孩子
                         }
                     }
                     //  往右
-                    else if (pos == 1){
-                        if (node_tmp.getRight()!=null){
-                            node_tmp = node_tmp.getRight();
-                            if(node_tmp.getData() == null){
-                                node_tmp.setData(input);
-                                flag = true;
+                    else if (pos == 1) {
+                        //计算做右孩子xy坐标
+                        int child_x = node_tmp.getId().getX() + 1;
+                        int child_y = node_tmp.getId().getY();
+                        MMPoint NodePosition = new MMPoint(child_x, child_y);
+
+                        //左孩子为空，判断左孩子位置有人不，有人则把该节点变为你的左孩子，对象更迭，没人就初始化一个占据该位置
+                        if (node_tmp.getRight() == null) {
+                            for (int pos_num = 0; pos_num < Position.size(); pos_num++) {
+                                int aid_x = Position.get(pos_num).getPosition().getX();
+                                int aid_y = Position.get(pos_num).getPosition().getY();
+                                if (aid_x == child_x && aid_y == child_y) {
+                                    node_tmp.setRight(Position.get(pos_num).getNode());
+                                    node_tmp = node_tmp.getRight();
+                                    continue STOP;
+                                }
                             }
-                            continue;
-                        }
-                        else {
                             TreeNode<String> node_right = new TreeNode<String>(input);
                             node_tmp.setRight(node_right);
-                            flag = true;
-                        }
-                    }
-                }
-//                long test2 = System.nanoTime();
-//                System.out.println("-----------------------这步用了:" + (test2 - test1) +"-----------------------");
-//                Time_total += (test2 - test1);
-
-            }
-
-//            System.out.println("-----------------------Setup parse time:" + (end - start)/ 1_000_000.0 +" ms-----------------------");
-
-
-            // 序列化存储
-            if (test_num == 0) {
-                String[] FilePara = filePath.split("_");
-                filePath = "NewDVH_DB/" + "tree_" + FilePara[2] + "_" + FilePara[3];
-                try (BufferedWriter writer_S = new BufferedWriter(new FileWriter(filePath))) {
-                    for (int i = 0; i < size; i++) {
-                        writer_S.write("new root"); // 节点值
-                        writer_S.newLine();
-                        if (roots[i].getData() != null) {
-                            writer_S.write(roots[i].getData().toString()); // 节点值
+                            node_tmp.setRightId(NodePosition);
+                            NodeSet node_cash = new NodeSet(NodePosition, node_right);
+                            Position.add(node_cash);
+                            break;
                         } else {
-                            writer_S.write("null");
+                            node_tmp = node_tmp.getRight();
                         }
-
-                        writer_S.newLine();
-                        serializeTree(roots[i].getLeft(), writer_S); // 序列化并写入文件
                     }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
-
-
-            reader.close();
-        }
-//        System.out.println("Time_total:" + Time_total);
-//        System.out.println("Time_ave:" + Time_total/cycle_num/ 1_000_000.0 + "ms");
-        System.out.println("----------" + filePath + " NewDVH_Setup has done----------");
-
-    }
-
-    private static <T> void serializeTree(TreeNode<T> node, BufferedWriter writer) throws IOException {
-        if (node == null) {
-            writer.write(""); // 空节点
-            writer.newLine();
-        } else {
-            if (node.getData()!=null){
-                writer.write(node.getData().toString()); // 节点值
-            }else {
-                writer.write("null");
-            }
-
-            writer.newLine();
-            serializeTree(node.getLeft(), writer); // 递归序列化左子树
-            serializeTree(node.getRight(), writer); // 递归序列化右子树
         }
     }
 }
