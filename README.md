@@ -67,6 +67,8 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 #### 输出
 
 - 根据输入参数，在对应文件夹生成的不同分布数据集
+  > Zipf分布在 DB_zipf 文件夹下
+  > Random分布在 DB_random 文件夹下
 
 #### 使用示例
 

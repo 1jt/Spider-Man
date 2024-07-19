@@ -4,12 +4,13 @@ import java.util.ArrayList;
 
 public class KeyValueGenerator {
     public static void main(String[] args) {
-//        char model = 'r'; // 'r' for random, 'z' for zipf
-        char model = 'z';
-        int numPairs = 1024 * 2 * 2 * 2 * 2 * 2; // 键值对的总数
+        char model = 'r'; // 'r' for random, 'z' for zipf
+//        char model = 'z';
+        int numPairs = 1024; // 键值对的总数
         int numKeys = numPairs/8; // 键的数量
         int maxVolume = 16; // 值的最大数量
-        String fileName = "Zipf_15.txt";
+//        String fileName = "Zipf_15.txt";
+        String fileName = "Random_10_4.txt";
         switch (model) {
             case 'r':
                 RandomDistribution rd = new RandomDistribution(numPairs, maxVolume);
@@ -18,7 +19,7 @@ public class KeyValueGenerator {
                     System.out.print(rd.distribution.get(i) + " ");
                 }
                 System.out.println();
-                generateRandomKeyValuePairs(rd.distribution, "DB/" + fileName);
+                generateRandomKeyValuePairs(rd.distribution, "DB_random/" + fileName);
                 break;
             case 'z':
                 ZipfDistribution zipf = new ZipfDistribution(numPairs, numKeys);
