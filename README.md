@@ -53,7 +53,7 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 
 ### 3. KeyValueGenerator
 
-用于生成满足随机分布的随机数的类，主要用于后续文档生成。
+根据不同分布和输入参数的不同，生成符合该分布的数据集。
 
 #### 输入
 
@@ -79,4 +79,28 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     int numKeys = numPairs/8; // 键的数量
     int maxVolume = 16; // 值的最大数量
     String fileName = "Zipf_15.txt";
+```
+
+### 4. Shuffle
+
+将生成的数据集打乱，用于后续代码测试
+
+#### 输入
+
+- `model`：选择模式 (z/r)
+- `filename`：输出文件名
+
+#### 输出
+
+- 根据输入参数，在对应文件夹放入的不同打乱后的数据集
+  > Zipf分布在 DB_zipf_shuffle 文件夹下
+  > Random分布在 DB_random_shuffle 文件夹下
+  > 文件名与原始文件相同
+
+#### 使用示例
+
+```java
+//  char model = 'r'; // 'r' for random, 'z' for zipf
+    char model = 'z';
+    String fileName = "Zipf_10.txt";
 ```
