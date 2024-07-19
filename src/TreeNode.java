@@ -3,13 +3,13 @@ public class TreeNode<T> {
     private TreeNode<T> left;
     private TreeNode<T> right;
 
-    private int id;
+    private MMPoint id;
 
     public TreeNode(T data) {
         this.data = data;
         this.left = null;
         this.right = null;
-//        this.id = null;
+        this.id = null;
     }
 
     public T getData() {
@@ -36,11 +36,23 @@ public class TreeNode<T> {
         this.right = right;
     }
 
-    public int getId(){
+    public MMPoint getId(){
         return id;
     }
 
-    public  void  setId(int id){
+    public  void  setId(MMPoint id){
         this.id = id;
     }
+
+    public MMPoint getLeftId(){ return left.id; }
+
+    public MMPoint getRightId(){ return right.id; }
+
+    public void setLeftId(MMPoint id){ left.id = id; }
+
+    public void setRightId(MMPoint id){ right.id = id; }
+
+
+
+
 }
