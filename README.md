@@ -1,6 +1,6 @@
 # 技术文档
 
-## 一. 测试数据集生成（DataGen）测试
+## 一. 测试数据集生成（DataGen）测试赵鹏
 
 ### 1. RandomDistribution
 
