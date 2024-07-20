@@ -1,6 +1,6 @@
 # 技术文档
 
-## 一. 测试数据集生成
+## 一. 测试数据集生成（DataGen）
 
 ### 1. RandomDistribution
 
@@ -104,3 +104,17 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     char model = 'z';
     String fileName = "Zipf_10.txt";
 ```
+
+## 二. 密码学工具（Tools）
+
+### 1. Hash
+
+提供各种哈希函数的接口
+
+#### 使用说明
+
+- `hash64`：64-bit hash function
+- `reduce`：reduce hash value to $[0,n)$
+- `Get_SHA_256`
+- `Get_MD5`
+- `Get_Sha_128`

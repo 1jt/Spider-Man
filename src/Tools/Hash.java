@@ -55,7 +55,7 @@ public class Hash {
     }
 
 
-    public static byte[]  Get_Sha_128(byte[] passwordToHash) {
+    public static byte[]  Get_SHA_128(byte[] passwordToHash) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.update(passwordToHash);
