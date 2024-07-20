@@ -1,10 +1,12 @@
+package DataGen;
+
 import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomDistribution {
     private final int numPairs; // total number of elements
     private final int maxVolume;
-    ArrayList<Integer> distribution; //
+    public ArrayList<Integer> distribution; //
 
     public RandomDistribution(int numPairs, int maxVolume) {
         this.numPairs = numPairs;

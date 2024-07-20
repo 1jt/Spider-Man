@@ -1,3 +1,5 @@
+package DataGen;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +16,7 @@ public class Shuffle {
         switch (model) {
             case 'r':
                 in_filePath = "DB_random/" + fileName; // txt文件路径
-                out_filePath = "DB_random_shuffle/" + fileName;; // txt文件路径
+                out_filePath = "DB_random_shuffle/" + fileName; // txt文件路径
                 lines = readLinesFromFile(in_filePath); // 读取txt文件内容到List中
                 Collections.shuffle(lines); // 随机打乱List中的数据
                 writeLinesToFile(lines, out_filePath); // 将打乱后的数据写回到txt文件
@@ -22,7 +24,7 @@ public class Shuffle {
                 break;
             case 'z':
                 in_filePath = "DB_zipf/" + fileName; // txt文件路径
-                out_filePath = "DB_zipf_shuffle/" + fileName;; // txt文件路径
+                out_filePath = "DB_zipf_shuffle/" + fileName; // txt文件路径
                 lines = readLinesFromFile(in_filePath); // 读取txt文件内容到List中
                 Collections.shuffle(lines); // 随机打乱List中的数据
                 writeLinesToFile(lines, out_filePath); // 将打乱后的数据写回到txt文件

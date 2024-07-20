@@ -1,3 +1,5 @@
+package DataGen;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -10,7 +12,7 @@ public class ZipfDistribution {
     //当 s→1 时，Zipf 分布逐渐接近对数分布，即高排名元素的概率与其排名的对数成反比关系。
     // s→∞ 时，分布趋向于均匀分布，即所有元素的概率趋向于相等。
     public double[] probabilities; // probabilities array for each rank
-    ArrayList<Integer> distribution;
+    public ArrayList<Integer> distribution;
 
     public ZipfDistribution(int numPairs,int numKeys) {
         this.numPairs = numPairs;
