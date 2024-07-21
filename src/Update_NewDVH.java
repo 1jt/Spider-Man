@@ -3,7 +3,7 @@ import java.io.*;
 
 public class Update_NewDVH {
 
-    public static ArrayList<NodeSet> DeleteUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException {
+    public static void DeleteUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException {
 
         //从键盘读取要删除的值
         BufferedReader index = new BufferedReader(new InputStreamReader(System.in));
@@ -33,7 +33,7 @@ public class Update_NewDVH {
 
         //清空更新序列，为下次更新做准备
         Update_Query_NewDVH.list.clear();
-        return database;
+
     }
 
     public static ArrayList<NodeSet> AddUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException {
