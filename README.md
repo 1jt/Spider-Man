@@ -113,8 +113,31 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 
 #### 使用说明
 
-- `hash64`：64-bit hash function
+- `hash64`：64-bit hash function // 输入为 long
 - `reduce`：reduce hash value to $[0,n)$
-- `Get_SHA_256`
+- `Get_SHA_256` // 以下输入均为 byte[]
+  - 输出 byte[32]
 - `Get_MD5`
+  - 输出 byte[16]
 - `Get_Sha_128`
+  - 输出 byte[16]
+
+### 2. tool
+
+提供各种常用工具函数的接口
+
+#### 使用说明
+
+- `bytesToLong`：将 byte[] 转换为 long
+- `longToBytes`：将 long 转换为 byte[]
+
+## 三. CCS'19 方案一（dprfMM）
+
+### 1. GGM
+
+#### 使用说明
+
+- `map`：GGM 映射表
+- `clear()`：清空映射表
+- `Tri_GGM_Path`：三叉 GGM 映射函数
+- `Doub_GGM_Path` ：二叉 GGM 映射函数
