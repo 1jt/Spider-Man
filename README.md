@@ -131,6 +131,32 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 - `bytesToLong`：将 byte[] 转换为 long
 - `longToBytes`：将 long 转换为 byte[]
 
+### 3. AESUtil
+
+#### 使用示例
+
+```java
+byte[] key = Hash.Get_SHA_256("123".getBytes());
+byte[] value = "hello".getBytes();
+for (byte b : value) {
+    System.out.print(Integer.toHexString(b & 0xff) + " ");
+}
+
+// test AESUtil.encrypt
+System.out.println();
+byte[] encrypted = AESUtil.encrypt(key, value);
+for (byte b : encrypted) {
+    System.out.print(Integer.toHexString(b & 0xff) + " ");
+}
+
+// test AESUtil.decrypt
+System.out.println();
+byte[] decrypted = AESUtil.decrypt(key, encrypted);
+for (byte b : decrypted) {
+    System.out.print(Integer.toHexString(b & 0xff) + " ");
+}
+```
+
 ## 三. CCS'19 方案一（dprfMM）
 
 ### 1. GGM
