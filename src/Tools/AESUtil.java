@@ -23,17 +23,9 @@ public class AESUtil {
 
     public static byte[] decrypt(byte[] K_e,byte[] ciphertext) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
         IvParameterSpec iv = new IvParameterSpec(InitVector.getBytes(StandardCharsets.UTF_8));
-
         SecretKeySpec secretKeySpec = new SecretKeySpec(K_e, "AES");
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec,iv);
-        try {
-            byte[] res = cipher.doFinal(ciphertext);
-            return res;
-        }catch (Exception e){
-
-        }
-        return  null;
+        return cipher.doFinal(ciphertext);
     }
-
 }
