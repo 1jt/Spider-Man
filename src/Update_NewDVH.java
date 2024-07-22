@@ -46,6 +46,7 @@ public class Update_NewDVH {
 
         //通过查询获得的查询pos序列，生成更新pos序列
         ArrayList<Integer> query_list = Update_Query_NewDVH.list;
+
         ArrayList<Integer> update_list = NewDVH_Tool.AddUpList(value, key, query_list, query_result, size);
 
         //当更新队列长度>=查询队列长度时，表示不存在dummy数据，添加需要重新创建一个节点

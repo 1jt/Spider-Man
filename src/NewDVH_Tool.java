@@ -7,7 +7,7 @@ public class NewDVH_Tool {
     public static int Size(String filePath) throws IOException {
         int size;
         int n = Tools.CalculateNumberOfDBEntries(filePath);
-        double c = 1;
+        double c = 0.125;
         size = (int) (c * n / 16);
         return size;
     }
@@ -19,6 +19,22 @@ public class NewDVH_Tool {
         int index = random.nextInt(DB.keySet().size());
         return index;
     }
+
+    public static TreeNode FindNode(int x,int y,ArrayList<NodeSet>Position){
+
+        for (int i = 0; i < Position.size(); i++) {
+            int aid_x = Position.get(i).getPosition().getX();
+            int aid_y = Position.get(i).getPosition().getY();
+            if (aid_x == x && aid_y == y) {
+                TreeNode node = Position.get(i).getNode();
+                return node;
+            }
+        }
+        return null;
+    }
+
+
+
 
     //为删除功能计算更新pos序列，需要输入目标key ，value ，查询pos序列，查询返回结果，尺寸size
     public static ArrayList<Integer> UpList(String value,String key, ArrayList<Integer> list, ArrayList<String>query_result,int size) {

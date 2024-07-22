@@ -11,17 +11,17 @@ public class UpdateTest_NewDVH {
         String query_key = "";
         ArrayList<String> Result = new ArrayList<>();
 
-        int Query_num = 1;//查询次数
-        int Query_cycle_time = 1;//查询关键字个数
+        int Query_num = 100;//查询次数
+        int Query_cycle_time = 100;//查询关键字个数
         int avage_num = 0;
 
         for (int Query_num_times = 0; Query_num_times < Query_num; Query_num_times++) {
             int result_num = 0;
             int judge_num = 0;
             for (int times = 0; times < Query_cycle_time; times++) {
-//                Random rd = new Random();
-//                int index = rd.nextInt(120); //更新赋值
-                int index = 7;
+                Random rd = new Random();
+                int index = rd.nextInt(120); //更新赋值
+//                int index = 7;
                 query_key = "Key" + index;
                 Result = Update_Query_NewDVH.Run(query_key, size, Position);
                 result_num += Result.size();
@@ -31,7 +31,7 @@ public class UpdateTest_NewDVH {
                 ) {
                     String[] keyValue = s.split("\\+");
                     if (Objects.equals(query_key, keyValue[0])) {
-                        System.out.println(query_key +  "value=" + keyValue[1]);
+//                        System.out.println(query_key +  "value=" + keyValue[1]);
                         num += 1;
                     }
                 }
@@ -99,6 +99,7 @@ public class UpdateTest_NewDVH {
                 }
                 Update_NewDVH.AddUpdate(size,key,first_result,Position);
 
+                //测试添加效果
                 System.out.println("*******************添加后效果展示***********************");
                 ArrayList<String> second_result = Update_Query_NewDVH.Run(key,size,Position);
                 System.out.println("一共返回结果数量：" + second_result.size());
@@ -110,15 +111,11 @@ public class UpdateTest_NewDVH {
                     }
                 }
 
-
-            }else if (option.equals("3")) {
+            }else  {
                 flag = false;
             }
 
-
         }
-
-
 
 
     }

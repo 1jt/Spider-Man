@@ -14,6 +14,7 @@ public class Setup_NewDVH {
     //    public static ArrayList<TreeNode> Rroots = new ArrayList<>();//测试用，装有所有根节点
     public static ArrayList<NodeSet> Position = new ArrayList<>();//存储所有NodeSet
 
+
     public static void Test(String filePath) throws IOException {
         int cycle_num = 1;  // 构建次数
 //        System.out.println("----------" + filePath + " starts Setup calculation----------");
