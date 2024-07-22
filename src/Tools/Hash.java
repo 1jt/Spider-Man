@@ -59,10 +59,7 @@ public class Hash {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.update(passwordToHash);
-            byte[] bytes = md.digest();
-            byte[] hash_128 = new byte[16];
-            System.arraycopy(hash_128,0,bytes,0,16);
-            return hash_128;
+            return md.digest();
         }
         catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
