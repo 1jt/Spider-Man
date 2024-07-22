@@ -133,6 +133,11 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 
 ### 3. AESUtil
 
+#### 使用说明
+
+- `AESUtil.encrypt(key, value)`
+- `AESUtil.decrypt(key, encrypted)`
+
 #### 使用示例
 
 ```java
