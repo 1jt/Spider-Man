@@ -14,10 +14,12 @@ public class UpdateTest_NewDVH {
         int Query_num = 100;//查询次数
         int Query_cycle_time = 100;//查询关键字个数
         int avage_num = 0;
+        int max_num = 0;
 
         for (int Query_num_times = 0; Query_num_times < Query_num; Query_num_times++) {
             int result_num = 0;
             int judge_num = 0;
+
             for (int times = 0; times < Query_cycle_time; times++) {
                 Random rd = new Random();
                 int index = rd.nextInt(120); //更新赋值
@@ -40,10 +42,11 @@ public class UpdateTest_NewDVH {
                 }
 
             }
-            System.out.println("平均volume = " + result_num / Query_cycle_time + " 暴露真实数量的查询有" + judge_num);
+            max_num = Math.max(max_num,judge_num);
+//            System.out.println("平均volume = " + result_num / Query_cycle_time + " 暴露真实数量的查询有" + judge_num);
             avage_num += result_num / Query_cycle_time;
         }
-        System.out.println("平均volume = " + avage_num / Query_num);
+        System.out.println("平均volume = " + avage_num / Query_num + "，最大暴露真实数量查询个数为"+ max_num);
 
     }
 
