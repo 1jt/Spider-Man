@@ -23,7 +23,6 @@ public class UpdateTest_NewDVH {
             for (int times = 0; times < Query_cycle_time; times++) {
                 Random rd = new Random();
                 int index = rd.nextInt(120); //更新赋值
-//                int index = 7;
                 query_key = "Key" + index;
                 Result = Update_Query_NewDVH.Run(query_key, size, Position);
                 result_num += Result.size();
