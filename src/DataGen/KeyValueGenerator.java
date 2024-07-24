@@ -3,6 +3,7 @@ package DataGen;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import Tools.SerialData;
 
 public class KeyValueGenerator {
     public static void main(String[] args) {
@@ -12,7 +13,7 @@ public class KeyValueGenerator {
         int numKeys = numPairs/8; // 键的数量
         int maxVolume = 16; // 值的最大数量
 //        String fileName = "Zipf_15.txt";
-        String fileName = "Random_11_4.txt";
+        String fileName = "Random_11_4.ser";
         switch (model) {
             case 'r':
                 RandomDistribution rd = new RandomDistribution(numPairs, maxVolume);
@@ -40,21 +41,25 @@ public class KeyValueGenerator {
     }
 
     private static void generateRandomKeyValuePairs(ArrayList<Integer> distribution, String fileName) {
-        try {
-            FileWriter writer = new FileWriter(fileName);
-            for (int i = 0; i < distribution.size(); i++) {
-                String key = "Key" + i;
+        // txt method
+//        try {
+//            FileWriter writer = new FileWriter(fileName);
+//            for (int i = 0; i < distribution.size(); i++) {
+//                String key = "Key" + i;
+//
+//                for (int j = 0; j < distribution.get(i); j++) {
+//                    String value = "Value" + j;
+//                    writer.write(key + "=" + value);
+//                    writer.write(System.lineSeparator());
+//                }
+//            }
+//            writer.close();
+//            System.out.println("Random key-value pairs generated and saved to " + fileName);
+//        } catch (IOException e) {
+//            System.err.println("Failed to write key-value pairs to " + fileName);
+//        }
 
-                for (int j = 0; j < distribution.get(i); j++) {
-                    String value = "Value" + j;
-                    writer.write(key + "=" + value);
-                    writer.write(System.lineSeparator());
-                }
-            }
-            writer.close();
-            System.out.println("Random key-value pairs generated and saved to " + fileName);
-        } catch (IOException e) {
-            System.err.println("Failed to write key-value pairs to " + fileName);
-        }
+        // Serializable method
+        SerialData.Serial_Raw_Out(distribution, fileName);
     }
 }
