@@ -44,9 +44,12 @@ public class Update_NewDVH {
         String value = index.readLine();
         String data = key + "+Value" + value;//因为更新之前对目标进行过查询，知道key
 
+
+//        long startTime = System.nanoTime(); // 记录开始时间
+        // 需要测试运行时间的代码段区间
+
         //通过查询获得的查询pos序列，生成更新pos序列
         ArrayList<Integer> query_list = Update_Query_NewDVH.list;
-
         ArrayList<Integer> update_list = NewDVH_Tool.AddUpList(value, key, query_list, query_result, size);
 
         //当更新队列长度>=查询队列长度时，表示不存在dummy数据，添加需要重新创建一个节点
@@ -99,8 +102,16 @@ public class Update_NewDVH {
                 }
             }
         }
+
+
+        //测试运行时间代码段区间
+//        long endTime = System.nanoTime(); // 记录结束时间
+//        long executionTime = (endTime - startTime) / 1000; // 计算代码段的运行时间（毫秒）
+//        System.out.println("代码段的运行时间为: " + executionTime + " 毫秒");
+
         //清空更新序列，为下次更新做准备
         Update_Query_NewDVH.list.clear();
         return database;
+
     }
 }
