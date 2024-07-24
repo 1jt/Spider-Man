@@ -130,12 +130,15 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 
 - `bytesToLong`：将 byte[] 转换为 long
 - `longToBytes`：将 long 转换为 byte[]
+- `DecimalConversion(int inNum, int index, int level)`： 
+  - 将一个十进制数inNum转换为index进制，并将转换后的每一位数字存储在一个整数数组中，数组长度为level
 
 ### 3. AESUtil
 
 #### 使用说明
 
 - `AESUtil.encrypt(key, value)`
+  - 加密结果是 128 bits（16 bytes）
 - `AESUtil.decrypt(key, encrypted)`
 
 #### 使用示例
@@ -162,6 +165,54 @@ for (byte b : decrypted) {
 }
 ```
 
+### 4. Cuckoo_Hash
+
+#### 使用说明
+
+- `K_d` ： 以 GGM 结构为基础的哈希函数的密钥
+  - `Get_K_d()`
+- `K_e` ： AES 加密的密钥
+  - `Get_K_e()`
+- `cuckoo_table` ：存储原始数据
+- `EMM` ：存储加密数据
+  - `Get_EMM()`
+- `table_size` ：哈希表大小 (单张大小)
+  - `Get_Table_Size()` // 元素数量的1.3倍
+- `level` : GGM 结构的层数（即maxVol的对数）
+  - `Get_Level()`
+- `Stash` : 存储溢出数据
+  - `Get_Stash()`
+- `leave_map` : 记录存入的元素，可以避免重复计算
+  - `Leave_Map_Clear()`
+- `Setup(KV[] kv_list, int level)` ：建立哈希表
+  - 将 kv_list 中的数据插入哈希表，level 为哈希表的层数（即maxVol的对数）
+- `InsertEntry(int index,KV[] kv_list)` ：插入数据
+  - 将 kv_list 中索引号为 index 的数据插入哈希表中
+- `Get(int index` ：查询数据
+  - 查询 EMM 中索引号为 index 的数据（解密后）
+
+#### 使用示例
+
+```java
+KV[] kv_list = new KV[10];
+for (int i = 0; i < kv_list.length; i++) {
+    kv_list[i] = new KV();
+    kv_list[i].key = "key" + i;
+    kv_list[i].value = "value" + i;
+    kv_list[i].counter = i;
+}
+
+int MAX_VOLUME_LENGTH = (int) Math.pow(2, 5); // 随便定的
+int CUCKOO_LEVEL = (int) Math.ceil(Math.log(MAX_VOLUME_LENGTH) / Math.log(2.0));//GGM Tree level for cuckoo hash
+
+Cuckoo_Hash cuckoo = new Cuckoo_Hash();
+cuckoo.Setup(kv_list, CUCKOO_LEVEL);
+for (int i = 0; i < cuckoo.Get_Table_Size()*2; i++) {
+    System.out.println(cuckoo.Get(i));
+}
+```
+
+
 ## 三. CCS'19 方案一（dprfMM）
 
 ### 1. GGM
@@ -171,4 +222,7 @@ for (byte b : decrypted) {
 - `map`：GGM 映射表
 - `clear()`：清空映射表
 - `Tri_GGM_Path`：三叉 GGM 映射函数
-- `Doub_GGM_Path` ：二叉 GGM 映射函数
+- `Doub_GGM_Path`：二叉 GGM 映射函数
+- `Map2Range(byte[] hash,int capacity,int index)`
+  - 利用 hash 值（8字节）确定在哈希表中的位置，哈希表大小为 capacity，index 为第几张哈希表
+

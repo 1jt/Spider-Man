@@ -55,8 +55,8 @@ public class tool {
 
 
 
-
-    public static int[] TtS(int inNum, int index, int level) {
+    // 将一个十进制数inNum转换为index进制，并将转换后的每一位数字存储在一个整数数组中，数组长度为level
+    public static int[] DecimalConversion(int inNum, int index, int level) {
         int[] result = new int[level];
         int i = 0;
         while (i < level) {

@@ -94,6 +94,7 @@ public class GGM {
     }
 
 
+    // 利用 hash 值确定在哈希表中的位置，哈希表大小为 capacity，index 为第几张哈希表
     public static int Map2Range(byte[] hash,int capacity,int index) {
         long r = tool.bytesToLong(hash);
         r = Hash.reduce((int) r,  capacity);
