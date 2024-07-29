@@ -262,13 +262,23 @@ for (KV kv : kvs) {
 
 #### 使用说明
 
-#### 使用说明
-
-- `Serial_Raw_Out(ArrayList<Integer> distribution,String fileName)`
-  - 被键值对生成器调用，将原始数据集序列化写入文件
-- `Serial_Raw_In(String fileName)`
-  - 从文件中序列化读取原始数据集
-  - 以 KV[] 的形式返回
+- `dprfMM(int numPairs, int maxVolume, String filename)`
+  - 构造函数，建立 Cuckoo Filter
+    - 第二种构造方式：`dprfMM(String filename)` : 从文件名中获取参数（非通用）
+  - `Setup(String filename)`
+    - 由构造函数调用，建立 Cuckoo Filter
+- `ArrayList<String> DprfQuery(String search_key)`
+  - 查询函数，返回查询结果
+  - `byte[] GenSearchToken(String search_key)`
+    - 由查询函数，生成查询令牌
+    - 提供静态版本，供外部调用：`byte[] GenSearchToken(String search_key,long K_d)`
+  - `ArrayList<byte[]> Query_Cuckoo(byte[] token)`
+    - 由查询函数调用，返回服务器查询结果
+    - 提供静态版本，供外部调用：`ArrayList<byte[]> Query_Cuckoo(byte[] token,Cuckoo_Hash cuckoo,int MAX_VOLUME_LENGTH)`
+  - `ArrayList<String> DecryptResult(ArrayList<byte[]> ServerResult, String search_key)`
+    - 由查询函数调用，解密服务器查询结果
+  - `SearchStash(String search_key, ArrayList<String> ClientResult)`
+    - 由查询函数调用，查询溢出数据
 
 #### 使用示例
 
@@ -277,9 +287,24 @@ for (KV kv : kvs) {
 System.out.println("----------------------------------------------test dprfMM-------------------------------------------");
 String filename = "DB_random/Random_10_4.ser";
 int[] params = tool.Get_Total_Max_Num(filename);
-dprfMM dprfmm = new dprfMM(params[0],params[1],filename);
-ArrayList<String> result = dprfmm.DprfQuery("Key2");
+
+// 不要求中间结果的情况下，以下两行已经包含了所有操作
+// dprfMM dprf = new dprfMM(filename); // 简化构造
+dprfMM dprf = new dprfMM(params[0],params[1],filename);
+ArrayList<String> result = dprf.DprfQuery("Key0");
+
+byte[] tk_key = dprfMM.GenSearchToken("Key0", Cuckoo_Hash.Get_K_d());
+System.out.println("\nGenerate token by static method:\n" + Arrays.toString(tk_key));
+
+ArrayList<byte[]> ServerResult = dprfMM.Query_Cuckoo(tk_key,dprf.cuckoo,params[1]);
+System.out.println("\nCiphertext and corresponding plaintext returned by the server: ");
+for (byte[] ciphertext : ServerResult) {
+    System.out.print(Arrays.toString(ciphertext) + " ");
+    System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
+}
+
+System.out.println("\nFinal Result: ");
 for (String s : result) {
-    System.out.println(s);
+    System.out.print(s + " ");
 }
 ```

@@ -8,10 +8,10 @@ import java.util.*;
 public class Cuckoo_Hash {
 
     private static long K_d=456;// 以 GGM 结构为基础的哈希函数的密钥
-    public long Get_K_d(){ return K_d;}
+    public static long Get_K_d(){ return K_d;}
 
     private static byte[] K_e = "7975922666f6eb02".getBytes(StandardCharsets.UTF_8);// AES 加密的密钥
-    public byte[] Get_K_e() { return K_e; }
+    public static byte[] Get_K_e() { return K_e; }
 
     static int table_size; // 哈希表的大小(单张表)
     public int Get_Table_Size(){ return table_size;}
@@ -70,14 +70,14 @@ public class Cuckoo_Hash {
         int h;
         int Left_Node, Right_Node;
         while (count < 5*level) {
-            String k = kv_list[index].key+","+kv_list[index].counter;
+            String k = kv_list[index].key+","+kv_list[index].value.substring(5);
             String k0 = k+",0";
             if(leave_map.containsKey(k0)) {
                 // 万一之前存的被踢出来，就不用重复计算了
                 Left_Node = leave_map.get(k0);
             }else{
                 // 利用 GGM 结构生成哈希值
-                byte[] father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(kv_list[index].counter, 2, level));
+                byte[] father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(kv_list[index].value.substring(5)), 2, level));
                 // 第一张表中的位置
                 Left_Node = GGM.Map2Range(Arrays.copyOfRange(father_Node, 1 , 9 ),table_size,0);
                 leave_map.put(k0,Left_Node);
@@ -95,7 +95,7 @@ public class Cuckoo_Hash {
                 index = temp;
             }
 
-            k = kv_list[index].key+","+kv_list[index].counter;
+            k = kv_list[index].key+","+kv_list[index].value.substring(5);
             String k1 =  k+",1";
             Right_Node = leave_map.get(k1);
             h = Right_Node;
