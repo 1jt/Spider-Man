@@ -133,8 +133,10 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 
 - `bytesToLong`：将 byte[] 转换为 long
 - `longToBytes`：将 long 转换为 byte[]
-- `DecimalConversion(int inNum, int index, int level)`： 
+- `int[] DecimalConversion(int inNum, int index, int level)`： 
   - 将一个十进制数inNum转换为index进制，并将转换后的每一位数字存储在一个整数数组中，数组长度为level
+- `int[] Get_Total_Max_Num(String filename)`：
+  - 从文件名中获取数据集的总数和最大值
 
 ### 3. AESUtil
 
@@ -256,3 +258,28 @@ for (KV kv : kvs) {
 - `Map2Range(byte[] hash,int capacity,int index)`
   - 利用 hash 值（8字节）确定在哈希表中的位置，哈希表大小为 capacity，index 为第几张哈希表
 
+### 2. dprfMM
+
+#### 使用说明
+
+#### 使用说明
+
+- `Serial_Raw_Out(ArrayList<Integer> distribution,String fileName)`
+  - 被键值对生成器调用，将原始数据集序列化写入文件
+- `Serial_Raw_In(String fileName)`
+  - 从文件中序列化读取原始数据集
+  - 以 KV[] 的形式返回
+
+#### 使用示例
+
+```java
+// test dprfMM
+System.out.println("----------------------------------------------test dprfMM-------------------------------------------");
+String filename = "DB_random/Random_10_4.ser";
+int[] params = tool.Get_Total_Max_Num(filename);
+dprfMM dprfmm = new dprfMM(params[0],params[1],filename);
+ArrayList<String> result = dprfmm.DprfQuery("Key2");
+for (String s : result) {
+    System.out.println(s);
+}
+```

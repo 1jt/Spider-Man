@@ -2,12 +2,10 @@ package Tools;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.Random;
 
 public class tool {
-
-
-
     public static long bytesToLong(byte[] bytes) {
         long num = 0;
         for (int ix = 0; ix < 8; ++ix) {
@@ -64,6 +62,23 @@ public class tool {
             inNum = inNum / index;
             i++;
         }
+        return result;
+    }
+
+    public static int[] Get_Total_Max_Num(String filename){
+        int[] result = new int[2];
+
+        String[] temp = filename.split("_|\\.|/");
+        if (Objects.equals(temp[2], "Random")){
+            result[0] = (int)Math.pow(2, Integer.parseInt(temp[3]));
+            result[1] = (int)Math.pow(2, Integer.parseInt(temp[4]));
+        }else if(Objects.equals(temp[1], "Zipf")) {
+            result[0] = (int) Math.pow(2, Integer.parseInt(temp[3]));
+            result[1] = result[0]/8;
+        }else {
+            System.out.println("The filename is not correct!");
+        }
+
         return result;
     }
 
