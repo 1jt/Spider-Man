@@ -5,8 +5,9 @@ import java.util.ArrayList;
 
 public class SerialData {
     public static void main(String[] args) {
-        KV[] kvs = Serial_Raw_In("DB_random/Random_11_4.ser");
+        KV[] kvs = Serial_Raw_In("DB_random/Random_10_4.ser");
         // print kvs
+        assert kvs != null;
         for (KV kv : kvs) {
             System.out.println(kv.key + " " + kv.value);
         }

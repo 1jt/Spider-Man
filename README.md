@@ -69,6 +69,9 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 - 根据输入参数，在对应文件夹生成的不同分布数据集
   > Zipf分布在 DB_zipf 文件夹下
   > Random分布在 DB_random 文件夹下
+- 提供了两种生成文件的方式
+  - `txt` 方式：将键值对用可直观的方式写入文本文件中
+  - `Serializable` 方式：将键值对序列化后写入文件，文件后缀可以为`.ser`，`.dat`等（具体参考后续 SerialData）
 
 #### 使用示例
 
@@ -135,6 +138,8 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
 
 ### 3. AESUtil
 
+提供 AES 加密解密的接口
+
 #### 使用说明
 
 - `AESUtil.encrypt(key, value)`
@@ -166,6 +171,8 @@ for (byte b : decrypted) {
 ```
 
 ### 4. Cuckoo_Hash
+
+提供基于 GGM 结构的布谷鸟过滤器的接口
 
 #### 使用说明
 
@@ -209,6 +216,29 @@ Cuckoo_Hash cuckoo = new Cuckoo_Hash();
 cuckoo.Setup(kv_list, CUCKOO_LEVEL);
 for (int i = 0; i < cuckoo.Get_Table_Size()*2; i++) {
     System.out.println(cuckoo.Get(i));
+}
+```
+
+### 5. SerialData
+
+提供序列化 写入\读取 数据的接口
+
+#### 使用说明
+
+- `Serial_Raw_Out(ArrayList<Integer> distribution,String fileName)`
+  - 被键值对生成器调用，将原始数据集序列化写入文件
+- `Serial_Raw_In(String fileName)`
+  - 从文件中序列化读取原始数据集
+  - 以 KV[] 的形式返回
+
+#### 使用示例
+
+```java
+KV[] kvs = Serial_Raw_In("DB_random/Random_10_4.ser");
+// print kvs
+assert kvs != null;
+for (KV kv : kvs) {
+    System.out.println(kv.key + " " + kv.value);
 }
 ```
 
