@@ -137,6 +137,8 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
   - 将一个十进制数inNum转换为index进制，并将转换后的每一位数字存储在一个整数数组中，数组长度为level
 - `int[] Get_Total_Max_Num(String filename)`：
   - 从文件名中获取数据集的总数和最大值
+- `KL[] KV_2_KL(KV[] kv_list)`
+  - 从数据集文件中获取每个关键词对应值的数量
 
 ### 3. AESUtil
 
@@ -244,7 +246,6 @@ for (KV kv : kvs) {
 }
 ```
 
-
 ## 三. CCS'19 方案一（dprfMM）
 
 ### 1. GGM
@@ -257,6 +258,17 @@ for (KV kv : kvs) {
 - `Doub_GGM_Path`：二叉 GGM 映射函数
 - `Map2Range(byte[] hash,int capacity,int index)`
   - 利用 hash 值（8字节）确定在哈希表中的位置，哈希表大小为 capacity，index 为第几张哈希表
+
+### 2. Laplace
+
+#### 使用说明
+
+- `sensitivity`：敏感度
+- `epsilon`：隐私预算
+- `double getNoise(double param)`
+  - 自定义参数
+- `double getNoise()`
+  - 默认参数
 
 ### 2. dprfMM
 
@@ -306,5 +318,71 @@ for (byte[] ciphertext : ServerResult) {
 System.out.println("\nFinal Result: ");
 for (String s : result) {
     System.out.print(s + " ");
+}
+```
+
+### 2. dpMM
+
+#### 使用说明
+
+- `dpMM(int numPairs, int maxVolume, String filename)`
+  - 构造函数，建立 Cuckoo Filter
+    - 第二种构造方式：`dpMM(String filename)` : 从文件名中获取参数（非通用）
+  - `Setup(String filename)`
+    - 由构造函数调用，建立 Cuckoo Filter
+- `ArrayList<String> DpQuery(String search_key)`
+  - 查询函数，返回查询结果
+  - `byte[] GenSearchToken(String search_key)`
+    - 由查询函数调用，生成查询令牌
+    - 提供静态版本参考 dprfMM
+  - `ArrayList<byte[]> Query_l_key(byte[] token)`
+    - 由查询函数调用，服务器查询 $l(key)$ 函数
+    - 提供静态版本，供外部调用：`ArrayList<byte[]> Query_l_key(byte[] token,Cuckoo_Hash CT)`
+    - `ArrayList<byte[]>` 只是为了保持接口一致，实际上只有两个元素
+  - `int Decrypt_l_key(ArrayList<byte[]> ServerResult, String search_key)`
+    - 由查询函数调用，客户端解密 $l(key)$
+    - 如果不在哈希表中，返回 -1
+  - `int SearchCTStash(String search_key)`
+    - $l(key)$ 不在哈希表中时，查询CT的stash
+  - `Add_Noise(int l_key)`
+    - 由查询函数调用，添加噪声
+    - 提供静态版本，可以自定义 $l(\lambda)$: `int Add_Noise(int l_key, int l_lambda)`
+  - `ArrayList<byte[]> Query_Data(byte[] token,int l_key)`
+    - 由查询函数调用，返回服务器查询结果
+    - 提供静态版本，供外部调用：`ArrayList<byte[]> Query_Data(byte[] token,int l_key,Cuckoo_Hash Data)`
+  - 解密函数参考 dprfMM
+    - `ArrayList<String> DecryptResult(ArrayList<byte[]> ServerResult, String search_key)`
+  - `SearchDataStash(String search_key, ArrayList<String> ClientResult)`
+    - 由查询函数调用，查询溢出数据
+
+#### 使用示例
+  
+  ```java
+  // test dpMM
+System.out.println("----------------------------------------------test dpMM-------------------------------------------");
+String filename = "DB_zipf/Zipf_15_3688.ser";
+dpMM dp = new dpMM(filename);
+ArrayList<String> result = dp.DpQuery("Key1049");
+
+System.out.println("\nFinal Result: ");
+for (String s : result) {
+    System.out.print(s + " ");
+}
+// 测试token
+byte[] tk_key = dprfMM.GenSearchToken("Key45", Cuckoo_Hash.Get_K_d());
+System.out.println("\nGenerate token by static method:\n" + Arrays.toString(tk_key));
+// 测试服务器查询l(key)
+ArrayList<byte[]> l_key = dpMM.Query_l_key(tk_key, dp.CT);
+System.out.println("\nl(key) returned by the server: ");
+for (byte[] ciphertext : l_key) {
+    System.out.print(Arrays.toString(ciphertext) + " ");
+    System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
+}
+// 测试服务器返回结果
+ArrayList<byte[]> ServerResult = dpMM.Query_Data(tk_key,10,dp.Data);
+System.out.println("\nCiphertext and corresponding plaintext returned by the server: ");
+for (byte[] ciphertext : ServerResult) {
+    System.out.print(Arrays.toString(ciphertext) + " ");
+    System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
 }
 ```
