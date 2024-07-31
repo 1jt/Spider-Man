@@ -2,6 +2,7 @@ package Tools;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
@@ -65,6 +66,7 @@ public class tool {
         return result;
     }
 
+    // 从文件名中获取数据集的大小和maxVolume
     public static int[] Get_Total_Max_Num(String filename){
         int[] result = new int[2];
 
@@ -72,14 +74,31 @@ public class tool {
         if (Objects.equals(temp[2], "Random")){
             result[0] = (int)Math.pow(2, Integer.parseInt(temp[3]));
             result[1] = (int)Math.pow(2, Integer.parseInt(temp[4]));
-        }else if(Objects.equals(temp[1], "Zipf")) {
+        }else if(Objects.equals(temp[2], "Zipf")) {
             result[0] = (int) Math.pow(2, Integer.parseInt(temp[3]));
-            result[1] = result[0]/8;
+            result[1] = Integer.parseInt(temp[4]);
         }else {
             System.out.println("The filename is not correct!");
         }
 
         return result;
+    }
+
+    // 从数据集文件中获取每个关键词对应值的数量
+    public static KL[] KV_2_KL(KV[] kv_list){
+        ArrayList<KL> kl_list = new ArrayList<KL>();
+        kl_list.add(new KL(kv_list[0].key, 1));
+        for (int i = 1; i < kv_list.length; i++) {
+            int flag = 0;
+            if (kl_list.get(kl_list.size() - 1).key.equals(kv_list[i].key)) {
+                flag = 1;
+                kl_list.get(kl_list.size() - 1).length++;
+            }
+            if (flag == 0) {
+                kl_list.add(new KL(kv_list[i].key, 1));
+            }
+        }
+        return kl_list.toArray(new KL[0]);
     }
 
 
