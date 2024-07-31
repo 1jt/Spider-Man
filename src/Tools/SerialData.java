@@ -13,6 +13,8 @@ public class SerialData {
         }
 
     }
+
+    // 原始数据集反序列化输出
     public static void Serial_Raw_Out(ArrayList<Integer> distribution,String fileName) {
         KV[] kv_list = generateKVs(distribution);
         try {
@@ -38,6 +40,7 @@ public class SerialData {
         return kvs.toArray(new KV[0]);
     }
 
+    // 原始数据集反序列化输入
     public static KV[] Serial_Raw_In(String fileName) {
         try {
             FileInputStream fileIn = new FileInputStream(fileName);
