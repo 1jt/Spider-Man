@@ -7,13 +7,13 @@ import Tools.SerialData;
 
 public class KeyValueGenerator {
     public static void main(String[] args) {
-        char model = 'r'; // 'r' for random, 'z' for zipf
-//        char model = 'z';
-        int numPairs = 1024; // 键值对的总数
+//        char model = 'r'; // 'r' for random, 'z' for zipf
+        char model = 'z';
+        int numPairs = (int) Math.pow(2,15); // 键值对的总数
         int numKeys = numPairs/8; // 键的数量
-        int maxVolume = 16; // 值的最大数量
-//        String fileName = "Zipf_15.txt";
-        String fileName = "Random_10_4.ser";
+        int maxVolume = (int) Math.pow(2,4); // 值的最大数量
+
+        double np = Math.ceil(Math.log(numPairs) / Math.log(2.0));
         switch (model) {
             case 'r':
                 RandomDistribution rd = new RandomDistribution(numPairs, maxVolume);
@@ -22,7 +22,7 @@ public class KeyValueGenerator {
                     System.out.print(rd.distribution.get(i) + " ");
                 }
                 System.out.println();
-                generateRandomKeyValuePairs(rd.distribution, "DB_random/" + fileName);
+                generateRandomKeyValuePairs(rd.distribution, "DB_random/Random_" + (int) np + "_" + (int) Math.ceil(Math.log(maxVolume) / Math.log(2.0)) + ".ser");
                 break;
             case 'z':
                 ZipfDistribution zipf = new ZipfDistribution(numPairs, numKeys);
@@ -31,7 +31,7 @@ public class KeyValueGenerator {
                     System.out.print(zipf.distribution.get(i) + " ");
                 }
                 System.out.println();
-                generateRandomKeyValuePairs(zipf.distribution, "DB_zipf/" + fileName);
+                generateRandomKeyValuePairs(zipf.distribution, "DB_zipf/Zipf_" + (int) np + "_" + zipf.distribution.get(0) + ".ser");
                 break;
             default:
                 System.out.println("Invalid model");
