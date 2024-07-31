@@ -10,6 +10,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 
 public class dprfMM {
@@ -68,7 +69,7 @@ public class dprfMM {
 
     // 提供静态与非静态的token生成方法
     public byte[] GenSearchToken(String search_key){
-        return Hash.Get_SHA_256((search_key + cuckoo.Get_K_d()).getBytes(StandardCharsets.UTF_8));
+        return Hash.Get_SHA_256((search_key + Cuckoo_Hash.Get_K_d()).getBytes(StandardCharsets.UTF_8));
     }
     public static byte[] GenSearchToken(String search_key,long K_d){
         return Hash.Get_SHA_256((search_key + K_d).getBytes(StandardCharsets.UTF_8));
@@ -103,16 +104,23 @@ public class dprfMM {
     // 客户端解密算法
     public static ArrayList<String> DecryptResult(ArrayList<byte[]> ServerResult, String search_key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         ArrayList<String> ClientResult = new ArrayList<>();
+        HashSet<String> duplicate = new HashSet<>();
         for (int i = 0; i < ServerResult.size(); ) {
             String s0 = new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(),ServerResult.get(i)));
             String[] s0_list = s0.split(",");
             if(s0_list[0].equals(search_key)){
-                ClientResult.add(s0_list[1]);
+                if (!duplicate.contains(s0_list[1])) {
+                    duplicate.add(s0_list[1]);
+                    ClientResult.add(s0_list[1]);
+                }
             }
             String s1 = new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(),ServerResult.get(i + 1)));
             String[] s1_list = s1.split(",");
             if(s1_list[0].equals(search_key)){
-                ClientResult.add(s1_list[1]);
+                if (!duplicate.contains(s1_list[1])) {
+                    duplicate.add(s1_list[1]);
+                    ClientResult.add(s1_list[1]);
+                }
             }
             i = i + 2;
         }
