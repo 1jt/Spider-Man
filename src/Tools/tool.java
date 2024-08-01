@@ -71,12 +71,12 @@ public class tool {
         int[] result = new int[2];
 
         String[] temp = filename.split("_|\\.|/");
-        if (Objects.equals(temp[2], "Random")){
-            result[0] = (int)Math.pow(2, Integer.parseInt(temp[3]));
-            result[1] = (int)Math.pow(2, Integer.parseInt(temp[4]));
-        }else if(Objects.equals(temp[2], "Zipf")) {
-            result[0] = (int) Math.pow(2, Integer.parseInt(temp[3]));
-            result[1] = Integer.parseInt(temp[4]);
+        if (Objects.equals(temp[2], "Random") || Objects.equals(temp[3], "Random")){
+            result[0] = (int)Math.pow(2, Integer.parseInt(temp[temp.length-3]));
+            result[1] = (int)Math.pow(2, Integer.parseInt(temp[temp.length-2]));
+        }else if(Objects.equals(temp[2], "Zipf") || Objects.equals(temp[3], "Zipf")){
+            result[0] = (int) Math.pow(2, Integer.parseInt(temp[temp.length-3]));
+            result[1] = Integer.parseInt(temp[temp.length-2]);
         }else {
             System.out.println("The filename is not correct!");
         }

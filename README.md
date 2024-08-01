@@ -84,9 +84,9 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     String fileName = "Zipf_15.txt";
 ```
 
-### 4. Shuffle
+### 4. Shuffle_txt
 
-将生成的数据集打乱，用于后续代码测试
+将生成的数据集打乱，用于后续代码测试（txt版本）
 
 #### 输入
 
@@ -107,6 +107,21 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     char model = 'z';
     String fileName = "Zipf_10.txt";
 ```
+
+### 5. Shuffle_ser
+
+将生成的数据集打乱，用于后续代码测试（Serializable版本）
+
+#### 输入
+
+- `filename`：输出文件名
+
+#### 输出
+
+- 根据输入参数，在对应文件夹放入的不同打乱后的数据集（都在Shuffle 大文件夹下）
+  > Zipf分布在 DB_zipf_shuffle 文件夹下
+  > Random分布在 DB_random_shuffle 文件夹下
+  > 文件名与原始文件相同
 
 ## 二. 密码学工具（Tools）
 
@@ -231,6 +246,8 @@ for (int i = 0; i < cuckoo.Get_Table_Size()*2; i++) {
 
 - `Serial_Raw_Out(ArrayList<Integer> distribution,String fileName)`
   - 被键值对生成器调用，将原始数据集序列化写入文件
+- `Serial_Raw_Out(KV[] kv_list,String fileName)`
+  - 如果已经生成 KV[]，可以直接写入文件
 - `Serial_Raw_In(String fileName)`
   - 从文件中序列化读取原始数据集
   - 以 KV[] 的形式返回
