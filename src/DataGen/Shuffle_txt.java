@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Shuffle {
+public class Shuffle_txt {
     public static void main(String[] args) {
 //        char model = 'r'; // 'r' for random, 'z' for zipf
         char model = 'z';
