@@ -30,6 +30,21 @@ public class SerialData {
             System.err.println("Failed to write key-value pairs to " + fileName);
         }
     }
+    // 如果已经生成 KV[]，可以直接写入文件
+    public static void Serial_Raw_Out(KV[] kv_list,String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream(fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(kv_list);
+
+            oos.close();
+            System.out.println("Random key-value pairs generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
     private static KV[] generateKVs(ArrayList<Integer> distribution) {
         ArrayList<KV> kvs = new ArrayList<>();
         for (int i = 0; i < distribution.size(); i++) {
