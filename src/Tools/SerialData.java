@@ -13,8 +13,25 @@ public class SerialData {
         }
 
     }
+
+    // 原始数据集反序列化输出
     public static void Serial_Raw_Out(ArrayList<Integer> distribution,String fileName) {
         KV[] kv_list = generateKVs(distribution);
+        try {
+            FileOutputStream fos = new FileOutputStream(fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(kv_list);
+
+            oos.close();
+            System.out.println("Random key-value pairs generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+    // 如果已经生成 KV[]，可以直接写入文件
+    public static void Serial_Raw_Out(KV[] kv_list,String fileName) {
         try {
             FileOutputStream fos = new FileOutputStream(fileName);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
@@ -38,6 +55,7 @@ public class SerialData {
         return kvs.toArray(new KV[0]);
     }
 
+    // 原始数据集反序列化输入
     public static KV[] Serial_Raw_In(String fileName) {
         try {
             FileInputStream fileIn = new FileInputStream(fileName);

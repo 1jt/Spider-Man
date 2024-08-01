@@ -84,9 +84,9 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     String fileName = "Zipf_15.txt";
 ```
 
-### 4. Shuffle
+### 4. Shuffle_txt
 
-将生成的数据集打乱，用于后续代码测试
+将生成的数据集打乱，用于后续代码测试（txt版本）
 
 #### 输入
 
@@ -107,6 +107,21 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
     char model = 'z';
     String fileName = "Zipf_10.txt";
 ```
+
+### 5. Shuffle_ser
+
+将生成的数据集打乱，用于后续代码测试（Serializable版本）
+
+#### 输入
+
+- `filename`：输出文件名
+
+#### 输出
+
+- 根据输入参数，在对应文件夹放入的不同打乱后的数据集（都在Shuffle 大文件夹下）
+  > Zipf分布在 DB_zipf_shuffle 文件夹下
+  > Random分布在 DB_random_shuffle 文件夹下
+  > 文件名与原始文件相同
 
 ## 二. 密码学工具（Tools）
 
@@ -137,6 +152,8 @@ for (int i = 0; i < zipf.distribution.size(); i++) {
   - 将一个十进制数inNum转换为index进制，并将转换后的每一位数字存储在一个整数数组中，数组长度为level
 - `int[] Get_Total_Max_Num(String filename)`：
   - 从文件名中获取数据集的总数和最大值
+- `KL[] KV_2_KL(KV[] kv_list)`
+  - 从数据集文件中获取每个关键词对应值的数量
 
 ### 3. AESUtil
 
@@ -229,6 +246,8 @@ for (int i = 0; i < cuckoo.Get_Table_Size()*2; i++) {
 
 - `Serial_Raw_Out(ArrayList<Integer> distribution,String fileName)`
   - 被键值对生成器调用，将原始数据集序列化写入文件
+- `Serial_Raw_Out(KV[] kv_list,String fileName)`
+  - 如果已经生成 KV[]，可以直接写入文件
 - `Serial_Raw_In(String fileName)`
   - 从文件中序列化读取原始数据集
   - 以 KV[] 的形式返回
@@ -244,7 +263,6 @@ for (KV kv : kvs) {
 }
 ```
 
-
 ## 三. CCS'19 方案一（dprfMM）
 
 ### 1. GGM
@@ -257,6 +275,17 @@ for (KV kv : kvs) {
 - `Doub_GGM_Path`：二叉 GGM 映射函数
 - `Map2Range(byte[] hash,int capacity,int index)`
   - 利用 hash 值（8字节）确定在哈希表中的位置，哈希表大小为 capacity，index 为第几张哈希表
+
+### 2. Laplace
+
+#### 使用说明
+
+- `sensitivity`：敏感度
+- `epsilon`：隐私预算
+- `double getNoise(double param)`
+  - 自定义参数
+- `double getNoise()`
+  - 默认参数
 
 ### 2. dprfMM
 
@@ -309,73 +338,68 @@ for (String s : result) {
 }
 ```
 
-## 四.共享树型方案（NewDVH）
-
-### 1. 对象类
-
-描述该方案中所使用的所有对象信息。
+### 2. dpMM
 
 #### 使用说明
 
-- `MMpoint`：包含（x,y）坐标，以及相应的构造方法。
+- `dpMM(int numPairs, int maxVolume, String filename)`
+  - 构造函数，建立 Cuckoo Filter
+    - 第二种构造方式：`dpMM(String filename)` : 从文件名中获取参数（非通用）
+  - `Setup(String filename)`
+    - 由构造函数调用，建立 Cuckoo Filter
+- `ArrayList<String> DpQuery(String search_key)`
+  - 查询函数，返回查询结果
+  - `byte[] GenSearchToken(String search_key)`
+    - 由查询函数调用，生成查询令牌
+    - 提供静态版本参考 dprfMM
+  - `ArrayList<byte[]> Query_l_key(byte[] token)`
+    - 由查询函数调用，服务器查询 $l(key)$ 函数
+    - 提供静态版本，供外部调用：`ArrayList<byte[]> Query_l_key(byte[] token,Cuckoo_Hash CT)`
+    - `ArrayList<byte[]>` 只是为了保持接口一致，实际上只有两个元素
+  - `int Decrypt_l_key(ArrayList<byte[]> ServerResult, String search_key)`
+    - 由查询函数调用，客户端解密 $l(key)$
+    - 如果不在哈希表中，返回 -1
+  - `int SearchCTStash(String search_key)`
+    - $l(key)$ 不在哈希表中时，查询CT的stash
+  - `Add_Noise(int l_key)`
+    - 由查询函数调用，添加噪声
+    - 提供静态版本，可以自定义 $l(\lambda)$: `int Add_Noise(int l_key, int l_lambda)`
+  - `ArrayList<byte[]> Query_Data(byte[] token,int l_key)`
+    - 由查询函数调用，返回服务器查询结果
+    - 提供静态版本，供外部调用：`ArrayList<byte[]> Query_Data(byte[] token,int l_key,Cuckoo_Hash Data)`
+  - 解密函数参考 dprfMM
+    - `ArrayList<String> DecryptResult(ArrayList<byte[]> ServerResult, String search_key)`
+  - `SearchDataStash(String search_key, ArrayList<String> ClientResult)`
+    - 由查询函数调用，查询溢出数据
 
-- `TreeNode`：节点对象，包含数据`data`，左孩子节点指向，右孩子节点指向，节点位置`id`(MMPiont类型)，以及相应的构造方法。
-- `NodeSet`：存储对象，包含`TreeNode`以及`MMPoint`，其中`MMPoint`数据与`TreeNode.id`相等，目的是在节点未知情况下判断该位置是否有节点存在，并包含相应的构造方法。
-
-### 2. 工具类
-
-提供方案所使用的工具类函数，以及方案主体部分代码。
-
-#### 使用说明
-
-- `NewDVH_Tool`：继承`Tools`，提供后续使用的各种工具函数，新增如下
+#### 使用示例
   
-  - `Size` :输入：文件路径，输出：`size`值。功能：计算初始化算法中根节点的数目-`size`，该值客户端和服务器都可见。
-  
-    ```java
-    public static int Size(String filePath) throws IOException {
-        int size;
-        int n = Tools.CalculateNumberOfDBEntries(filePath);
-        double c = 0.125;
-        size = (int) (c * n / 8);
-        return size;
-    }
-    ```
-  
-    其中`c`作为隐私参数。可以在此算法中，通过调整`c`值，控制查询通信开销以及隐私暴露大小，`c`越大，查询通信开销越小，隐私暴露越多。
-  
-  - `FindNode`：输入：`x`、`y`、数据集`Position`，输出：`TreeNode`型节点信息。功能：
-  
-  - `UpList`：输入：，输出：。功能：
-  
-  - `AddUpList`：输入：，输出：。功能：
-  
-- `Setup_NewDVH`：方案的初始化算法，包含静态变量`Position`以及主题函数`Test`，其中`Position`包含所有结构化的数据信息，`Test`包括方案具体流程。
-  - `Position`：
-  - `Test`：输入：，输出：。功能：
-  
-- `Update_Query_NewDVH `：执行更新方案第一步：对目标关键字进行查询，包含静态变量`List`以及主体函数`Run`，其中`List`记录查询时遍历所走的`pos`序列，用于生成随机更新队列。
-  - `List`：
-  - `Run`：输入：，输出：。功能：
-  
-- `Update_NewDVH`：方案的更新算法。包括两种更新方案：`DeleteUpdate`删除算法，以及`AddUpdate`更新算法。
-  - `DeleteUpdate`：输入：，输出：。功能：
-  - `AddUpdate`：输入：，输出：。功能：
+  ```java
+  // test dpMM
+System.out.println("----------------------------------------------test dpMM-------------------------------------------");
+String filename = "DB_zipf/Zipf_15_3688.ser";
+dpMM dp = new dpMM(filename);
+ArrayList<String> result = dp.DpQuery("Key1049");
 
-### 3. 测试类
-
-提供针对NewDVH方案的测试函数，可以在此提供不同的数据库，直接测试方案的各种开销。
-
-- `UpdateTest_NewDVH`：
-- `NewDVH_Test`：
-
-
-
-
-
-
-
-
-
-
-
+System.out.println("\nFinal Result: ");
+for (String s : result) {
+    System.out.print(s + " ");
+}
+// 测试token
+byte[] tk_key = dprfMM.GenSearchToken("Key45", Cuckoo_Hash.Get_K_d());
+System.out.println("\nGenerate token by static method:\n" + Arrays.toString(tk_key));
+// 测试服务器查询l(key)
+ArrayList<byte[]> l_key = dpMM.Query_l_key(tk_key, dp.CT);
+System.out.println("\nl(key) returned by the server: ");
+for (byte[] ciphertext : l_key) {
+    System.out.print(Arrays.toString(ciphertext) + " ");
+    System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
+}
+// 测试服务器返回结果
+ArrayList<byte[]> ServerResult = dpMM.Query_Data(tk_key,10,dp.Data);
+System.out.println("\nCiphertext and corresponding plaintext returned by the server: ");
+for (byte[] ciphertext : ServerResult) {
+    System.out.print(Arrays.toString(ciphertext) + " ");
+    System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
+}
+```
