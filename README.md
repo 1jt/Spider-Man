@@ -271,6 +271,19 @@ assert kvs != null;
 for (KV kv : kvs) {
     System.out.println(kv.key + " " + kv.value);
 }
+
+// 写入
+dprfMM dprf = new dprfMM("Zipf_9_118.ser");
+SerialData.Serial_DB_Out("Zipf_9_118.ser");
+
+// 读出
+dpMM dp = SerialData.Serial_dpMM_In("Zipf_15_3688.ser");
+ArrayList<String> result = dp.DpQuery("Key1049");
+
+System.out.println("\nFinal Result: ");
+for (String s : result) {
+    System.out.print(s + " ");
+}
 ```
 
 ## 三. dprfMM
