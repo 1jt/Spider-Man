@@ -5,12 +5,17 @@ import Tools.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import dpMM.*;
+import VHDSSE.*;
 
 
 public class test {
@@ -90,14 +95,14 @@ public class test {
 
         // test dprfMM
 //        System.out.println("----------------------------------------------test dprfMM-------------------------------------------");
-//        String filename = "DB_random/Random_10_4.ser";
+//        String filename = "Shuffle/DB_zipf/Zipf_9_118.ser";
 //        int[] params = tool.Get_Total_Max_Num(filename);
 //
 //        // 不要求中间结果的情况下，以下两行已经包含了所有操作
 //        dprfMM dprf = new dprfMM(params[0],params[1],filename);
 //        // dprfMM dprf = new dprfMM(filename); // 简化构造
 //        ArrayList<String> result = dprf.DprfQuery("Key0");
-
+//
 //        System.out.println("\nFinal Result: ");
 //        for (String s : result) {
 //            System.out.print(s + " ");
@@ -139,33 +144,63 @@ public class test {
 //        }
 
         // test dpMM
-        System.out.println("----------------------------------------------test dpMM-------------------------------------------");
-        String filename = "DB_zipf/Zipf_15_3688.ser";
-        dpMM dp = new dpMM(filename);
-        ArrayList<String> result = dp.DpQuery("Key1049");
+//        System.out.println("----------------------------------------------test dpMM-------------------------------------------");
+//        String filename = "DB_zipf/Zipf_15_3688.ser";
+//        dpMM dp = new dpMM(filename);
+//        ArrayList<String> result = dp.DpQuery("Key1049");
+//
+//        System.out.println("\nFinal Result: ");
+//        for (String s : result) {
+//            System.out.print(s + " ");
+//        }
+//        // 测试token
+//        byte[] tk_key = dprfMM.GenSearchToken("Key45", Cuckoo_Hash.Get_K_d());
+//        System.out.println("\nGenerate token by static method:\n" + Arrays.toString(tk_key));
+//        // 测试服务器查询l(key)
+//        ArrayList<byte[]> l_key = dpMM.Query_l_key(tk_key, dp.CT);
+//        System.out.println("\nl(key) returned by the server: ");
+//        for (byte[] ciphertext : l_key) {
+//            System.out.print(Arrays.toString(ciphertext) + " ");
+//            System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
+//        }
+//        // 测试服务器返回结果
+//        ArrayList<byte[]> ServerResult = dpMM.Query_Data(tk_key,10,dp.Data);
+//        System.out.println("\nCiphertext and corresponding plaintext returned by the server: ");
+//        for (byte[] ciphertext : ServerResult) {
+//            System.out.print(Arrays.toString(ciphertext) + " ");
+//            System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
+//        }
 
-        System.out.println("\nFinal Result: ");
-        for (String s : result) {
-            System.out.print(s + " ");
-        }
-        // 测试token
-        byte[] tk_key = dprfMM.GenSearchToken("Key45", Cuckoo_Hash.Get_K_d());
-        System.out.println("\nGenerate token by static method:\n" + Arrays.toString(tk_key));
-        // 测试服务器查询l(key)
-        ArrayList<byte[]> l_key = dpMM.Query_l_key(tk_key, dp.CT);
-        System.out.println("\nl(key) returned by the server: ");
-        for (byte[] ciphertext : l_key) {
-            System.out.print(Arrays.toString(ciphertext) + " ");
-            System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
-        }
-        // 测试服务器返回结果
-        ArrayList<byte[]> ServerResult = dpMM.Query_Data(tk_key,10,dp.Data);
-        System.out.println("\nCiphertext and corresponding plaintext returned by the server: ");
-        for (byte[] ciphertext : ServerResult) {
-            System.out.print(Arrays.toString(ciphertext) + " ");
-            System.out.println(new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(), ciphertext)));
-        }
+        // test VHDSSE
+        System.out.println("----------------------------------------------test VHDSSE-------------------------------------------");
+        String filename = "Shuffle/DB_zipf/Zipf_9_118.ser";
+        int[] params = tool.Get_Total_Max_Num(filename);
+        VHDSSE vhdsse = new VHDSSE(params[0]-1,params[1],filename);
+        SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
+        VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_118.ser");
+        assert vh != null;
+        vh.VHDSSE_Query("Key60");
 
+
+        // test Serial
+//        dprfMM dprf = new dprfMM(params[0],params[1],filename);
+//        SerialData.Serial_DB_Out(dprf,filename.split("/")[2]);
+//        dprfMM dprf = SerialData.Serial_dprfMM_In("DB/dprfMM/Zipf_9_118.ser");
+//        // dprfMM dprf = new dprfMM(filename); // 简化构造
+//        assert dprf != null;
+//        ArrayList<String> result = dprf.DprfQuery("Key0");
+//
+//        System.out.println("\nFinal Result: ");
+//        for (String s : result) {
+//            System.out.print(s + " ");
+//        }
+//        dpMM dp = SerialData.Serial_dpMM_In("Zipf_15_3688.ser");
+//        ArrayList<String> result = dp.DpQuery("Key1049");
+//
+//        System.out.println("\nFinal Result: ");
+//        for (String s : result) {
+//            System.out.print(s + " ");
+//        }
 
 
 
