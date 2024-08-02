@@ -179,7 +179,7 @@ public class test {
         SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
         VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_118.ser");
         assert vh != null;
-        vh.VHDSSE_Query("Key60");
+        vh.VHDSSE_Query("Key3");
 
 
         // test Serial

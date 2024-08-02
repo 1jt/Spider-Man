@@ -273,7 +273,7 @@ for (KV kv : kvs) {
 }
 ```
 
-## 三. CCS'19 方案一（dprfMM）
+## 三. dprfMM
 
 ### 1. GGM
 
@@ -285,17 +285,6 @@ for (KV kv : kvs) {
 - `Doub_GGM_Path`：二叉 GGM 映射函数
 - `Map2Range(byte[] hash,int capacity,int index)`
   - 利用 hash 值（8字节）确定在哈希表中的位置，哈希表大小为 capacity，index 为第几张哈希表
-
-### 2. Laplace
-
-#### 使用说明
-
-- `sensitivity`：敏感度
-- `epsilon`：隐私预算
-- `double getNoise(double param)`
-  - 自定义参数
-- `double getNoise()`
-  - 默认参数
 
 ### 2. dprfMM
 
@@ -347,6 +336,19 @@ for (String s : result) {
     System.out.print(s + " ");
 }
 ```
+
+## 四. dpMM
+
+### 1. Laplace
+
+#### 使用说明
+
+- `sensitivity`：敏感度
+- `epsilon`：隐私预算
+- `double getNoise(double param)`
+  - 自定义参数
+- `double getNoise()`
+  - 默认参数
 
 ### 2. dpMM
 
@@ -414,7 +416,33 @@ for (byte[] ciphertext : ServerResult) {
 }
   ```
 
-## 四.共享树型方案（NewDVH）
+## 四. VHDSSE
+
+### 1. VHDSSE
+
+#### 使用说明
+
+- `VHDSSE(int numPairs, int maxVolume, String filename)`
+  - 构造函数，建立 VHDSSE 方案
+    - 第二种构造方式：`VHDSSE(String filename)` : 从文件名中获取参数（非通用）
+  - `Setup(String filename)`
+    - 由构造函数调用，建立 Cuckoo Filter
+    - `byte[][] EncryptEMM(byte[] K, ArrayList<KV> Key_Value)`
+      - 由Setup函数调用，加密 stash 和 buf
+    - `int f(int n)`
+      - $f(n) = O(\log n)$,用于计算stash的大小，系数暂设为2
+- `ArrayList<String> VHDSSE_Query(String search_key)`
+  - 查询函数，返回查询结果
+  - `Search_stash_buf(String search_key, ArrayList<String> ClientResult,byte[][] stash,byte[][] buf)`
+    - 由查询函数调用，用于客户端查询 stash 和 buf
+- `byte[] GenSearchToken(String search_key)`
+  - 由查询函数调用，生成查询令牌
+  - 提供静态版本参考 dprfMM
+- `ArrayList<byte[]> VHDSSE_Query_Server(String search_key)`
+  - 返回服务器查询结果（密文）
+- 
+
+## 五. 共享树型方案（NewDVH）
 
 ### 1. 对象类
 

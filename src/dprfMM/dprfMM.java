@@ -58,6 +58,7 @@ public class dprfMM implements Serializable {
         cuckoo.Setup(kv_list, CUCKOO_LEVEL);
     }
     // 用于已有KV[]的构造函数(VHDSSE方案)
+    // TODO: 2021/4/6 可以考虑将Setup函数合并进入构造函数
     public void Setup(KV[] kv_list) throws Exception {
         //storage size for dprfMM
         STORAGE_CUCKOO = (int) Math.floor((DATA_SIZE * (1 + alpha)));
@@ -125,10 +126,14 @@ public class dprfMM implements Serializable {
     // 客户端解密算法
     public static ArrayList<String> DecryptResult(ArrayList<byte[]> ServerResult, String search_key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         ArrayList<String> ClientResult = new ArrayList<>();
+        // 支持去重（dpMM）
         HashSet<String> duplicate = new HashSet<>();
         for (int i = 0; i < ServerResult.size(); ) {
             String s0 = new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(),ServerResult.get(i)));
             String[] s0_list = s0.split(",");
+            // TODO: 2021/4/6 写一个VHDSSE专用的解密算法（感觉牵扯的东西好多好烦...）
+            if (s0_list.length == 3)
+                s0_list[1] = s0_list[1] + "," + s0_list[2];
             if(s0_list[0].equals(search_key)){
                 if (!duplicate.contains(s0_list[1])) {
                     duplicate.add(s0_list[1]);
@@ -137,6 +142,8 @@ public class dprfMM implements Serializable {
             }
             String s1 = new String(AESUtil.decrypt(Cuckoo_Hash.Get_K_e(),ServerResult.get(i + 1)));
             String[] s1_list = s1.split(",");
+            if (s1_list.length == 3)
+                s1_list[1] = s1_list[1] + "," + s1_list[2];
             if(s1_list[0].equals(search_key)){
                 if (!duplicate.contains(s1_list[1])) {
                     duplicate.add(s1_list[1]);
