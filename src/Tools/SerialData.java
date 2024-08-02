@@ -3,6 +3,10 @@ package Tools;
 import java.io.*;
 import java.util.ArrayList;
 
+import VHDSSE.*;
+import dprfMM.*;
+import dpMM.*;
+
 public class SerialData {
     public static void main(String[] args) {
         KV[] kvs = Serial_Raw_In("DB_random/Random_10_4.ser");
@@ -68,4 +72,88 @@ public class SerialData {
         }
         return null;
     }
+
+    // 数据集序列化存储（dprfMM）
+    public static void Serial_DB_Out(dprfMM dprf,String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream("DB/dprfMM/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(dprf);
+
+            oos.close();
+            System.out.println("dprfMM generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+    public static dprfMM Serial_dprfMM_In(String fileName) {
+        try {
+            FileInputStream fileIn = new FileInputStream("DB/dprfMM/" + fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (dprfMM) in.readObject();
+        } catch (EOFException e) {
+            System.out.println("End of file");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    // 数据集序列化存储（dprfMM）
+    public static void Serial_DB_Out(dpMM dp, String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream("DB/dpMM/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(dp);
+
+            oos.close();
+            System.out.println("dp generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+    public static dpMM Serial_dpMM_In(String fileName) {
+        try {
+            FileInputStream fileIn = new FileInputStream("DB/dpMM/" + fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (dpMM) in.readObject();
+        } catch (EOFException e) {
+            System.out.println("End of file");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 数据集序列化存储（dprfMM）
+    public static void Serial_DB_Out(VHDSSE vhdsse, String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream("DB/VHDSSE/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(vhdsse);
+
+            oos.close();
+            System.out.println("VHDSSE generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+    public static VHDSSE Serial_VHDSSE_In(String fileName) {
+        try {
+            FileInputStream fileIn = new FileInputStream("DB/VHDSSE/" + fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (VHDSSE) in.readObject();
+        } catch (EOFException e) {
+            System.out.println("End of file");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

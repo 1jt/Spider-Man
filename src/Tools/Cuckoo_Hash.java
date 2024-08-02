@@ -2,10 +2,11 @@ package Tools;
 
 import dprfMM.GGM;
 
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-public class Cuckoo_Hash {
+public class Cuckoo_Hash implements Serializable {
 
     private static long K_d=456;// 以 GGM 结构为基础的哈希函数的密钥
     public static long Get_K_d(){ return K_d;}
@@ -100,7 +101,13 @@ public class Cuckoo_Hash {
                 Left_Node = leave_map.get(k0);
             }else{
                 // 利用 GGM 结构生成哈希值
-                byte[] father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(kv_list[index].value.substring(5)), 2, level));
+                byte[] father_Node;
+                String value = kv_list[index].value;
+                // 增加对VHDSSE中更新操作的支持
+                if(k.endsWith("add")||k.endsWith("del"))
+                    father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(value.substring(5,value.length()-4)), 2, level));
+                else
+                    father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(value.substring(5)), 2, level));
                 // 第一张表中的位置
                 Left_Node = GGM.Map2Range(Arrays.copyOfRange(father_Node, 1 , 9 ),table_size,0);
                 leave_map.put(k0,Left_Node);
@@ -132,7 +139,7 @@ public class Cuckoo_Hash {
             }
             ++count;
         }
-        System.out.println("add an element into the stash");
+//        System.out.println("add an element into the stash");
         stash.add(kv_list[index]);
     }
 

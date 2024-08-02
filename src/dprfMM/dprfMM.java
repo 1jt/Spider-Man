@@ -4,6 +4,7 @@ import Tools.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -13,7 +14,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 
-public class dprfMM {
+public class dprfMM implements Serializable {
 
     public Cuckoo_Hash cuckoo;
 
@@ -37,6 +38,13 @@ public class dprfMM {
         this.CUCKOO_LEVEL = (int) Math.ceil(Math.log(MAX_VOLUME_LENGTH) / Math.log(2.0));
         Setup(filename);
     }
+    // 已有KV[]的构造函数(VHDSSE方案)
+    public dprfMM(int maxVolume,KV[] kv_list) throws Exception {
+        this.DATA_SIZE = kv_list.length;
+        this.MAX_VOLUME_LENGTH = maxVolume;
+        this.CUCKOO_LEVEL = (int) Math.ceil(Math.log(MAX_VOLUME_LENGTH) / Math.log(2.0));
+        Setup(kv_list);
+    }
 
     public void Setup(String filename) throws Exception {
         //storage size for dprfMM
@@ -49,12 +57,22 @@ public class dprfMM {
         assert kv_list != null;
         cuckoo.Setup(kv_list, CUCKOO_LEVEL);
     }
+    // 用于已有KV[]的构造函数(VHDSSE方案)
+    public void Setup(KV[] kv_list) throws Exception {
+        //storage size for dprfMM
+        STORAGE_CUCKOO = (int) Math.floor((DATA_SIZE * (1 + alpha)));
+
+        //setup phase
+        cuckoo = new Cuckoo_Hash();
+        assert kv_list != null;
+        cuckoo.Setup(kv_list, CUCKOO_LEVEL);
+    }
 
     public ArrayList<String> DprfQuery(String search_key) throws Exception {
-        System.out.println("\nClient is generating token ...\nkeywords : >>>   " + (search_key) + "   <<<");
+//        System.out.println("\nClient is generating token ...\nkeywords : >>>   " + (search_key) + "   <<<");
         byte[] tk_key = GenSearchToken(search_key);
 
-        System.out.println("\nServer is searching and then Client decrypts ... ");
+//        System.out.println("\nServer is searching and then Client decrypts ... ");
         // 服务器返回结果
         ArrayList<byte[]> ServerResult = Query_Cuckoo(tk_key);
 
@@ -62,7 +80,10 @@ public class dprfMM {
         ArrayList<String> ClientResult = DecryptResult(ServerResult,search_key);
 
         // 搜索stash
-        SearchStash(search_key,ClientResult);
+        // 如果stash不为空
+        if (!cuckoo.Get_Stash().isEmpty()){
+            SearchStash(search_key,ClientResult);
+        }
 
         return ClientResult;
     }

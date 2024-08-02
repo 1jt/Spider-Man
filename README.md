@@ -251,6 +251,16 @@ for (int i = 0; i < cuckoo.Get_Table_Size()*2; i++) {
 - `Serial_Raw_In(String fileName)`
   - 从文件中序列化读取原始数据集
   - 以 KV[] 的形式返回
+- `Serial_DB_Out`
+  - `(dprfMM dprf,String fileName)` // 用于 dprfMM
+  - `(dpMM dp,String fileName)` // 用于 dpMM
+  - `(VHDSSE vhdsse, String fileName)` // 用于 VHDSSE
+- `Serial_dprfMM_In(String fileName)`
+  - 从文件中序列化读取 dprfMM 数据集
+- `Serial_dpMM_In(String fileName)`
+  - 从文件中序列化读取 dpMM 数据集
+- `Serial_VHDSSE_In(String fileName)`
+  - 从文件中序列化读取 VHDSSE 数据集
 
 #### 使用示例
 

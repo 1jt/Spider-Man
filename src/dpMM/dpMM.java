@@ -6,6 +6,7 @@ import dprfMM.GGM;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -13,7 +14,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class dpMM {
+public class dpMM implements Serializable {
     public Cuckoo_Hash Data; // 用于存储数据
     public Cuckoo_Hash CT; // 用于存储 l(key)
 
