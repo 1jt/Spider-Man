@@ -185,7 +185,7 @@ public class test {
         // test Serial
 //        dprfMM dprf = new dprfMM(params[0],params[1],filename);
 //        SerialData.Serial_DB_Out(dprf,filename.split("/")[2]);
-//        dprfMM dprf = SerialData.Serial_dprfMM_In("DB/dprfMM/Zipf_9_118.ser");
+//        dprfMM dprf = SerialData.Serial_dprfMM_In("Zipf_9_118.ser");
 //        // dprfMM dprf = new dprfMM(filename); // 简化构造
 //        assert dprf != null;
 //        ArrayList<String> result = dprf.DprfQuery("Key0");

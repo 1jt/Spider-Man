@@ -7,10 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.*;
 
 import dprfMM.dprfMM;
 
@@ -169,8 +166,8 @@ public class VHDSSE implements Serializable {
     }
 
     public ArrayList<String> Judge_result(ArrayList<String> result) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        HashSet<String> add = new HashSet<>();
-        HashSet<String> del = new HashSet<>();
+        HashMap<String, Integer> add = new HashMap<>();
+        HashMap<String, Integer> del = new HashMap<>();
         for (String s : result) {
             String[] kv = s.split(",");
             if (kv[1].equals("add")) {
