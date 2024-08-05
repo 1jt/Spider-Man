@@ -111,14 +111,12 @@ public class VHDSSE implements Serializable {
         for (dprfMM database : databases) {
             result.addAll(database.DprfQuery(search_key));
         }
-        // print result
-        System.out.println("\nFinal Result: ");
         Search_stash_buf(search_key, result, EMM_stash, EMM_buf);
-        for (String s : result) {
+        // 判断结果并进行错误校验
+        ArrayList<String> final_result = Judge_result(result);
+        for (String s : final_result) {
             System.out.println(s + " ");
         }
-        // 判断操作
-        ArrayList<String> final_result = Judge_result(result);
         return final_result;
     }
     // 客户端查询返回结果
@@ -165,20 +163,51 @@ public class VHDSSE implements Serializable {
         }
     }
 
+    // 判断结果并进行错误校验
     public ArrayList<String> Judge_result(ArrayList<String> result) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        ArrayList<String> final_result = new ArrayList<>();
         HashMap<String, Integer> add = new HashMap<>();
         HashMap<String, Integer> del = new HashMap<>();
         for (String s : result) {
             String[] kv = s.split(",");
             if (kv[1].equals("add")) {
-                result.remove(s);
+                if (del.containsKey(kv[0]) && del.get(kv[0])>0)
+                    del.put(kv[0], del.get(kv[0])-1);
+                else if (add.containsKey(kv[0]))
+                    add.put(kv[0], add.get(kv[0])+1);
+                else
+                    add.put(kv[0], 1);
+            } else if (kv[1].equals("del")) {
+                if (add.containsKey(kv[0]) && add.get(kv[0])>0)
+                    add.put(kv[0], add.get(kv[0])-1);
+                else if (del.containsKey(kv[0]))
+                    del.put(kv[0], del.get(kv[0])+1);
+                else
+                    del.put(kv[0], 1);
             }
         }
-        return result;
+        for (String s: add.keySet()) {
+            if (add.get(s) > 1)
+                System.out.println("Repeatedly adding " + s + " " + add.get(s) + " times");
+            else if (add.get(s) == 0)
+                continue;
+            else if (add.get(s) < 0) {
+                System.out.println("No possible theoretically (add) ");
+                continue;
+            }
+            final_result.add(s);
+        }
+        // test delete
+        for (String d: del.keySet()) {
+            if (del.get(d)>0){
+                System.out.println("Too much del operation on " + d + " " + del.get(d) + " times");
+            } else if (del.get(d)<0) {
+                System.out.println("No possible theoretically (del)");
+            }
+        }
+        return final_result;
     }
     public byte[] GenSearchToken(String search_key){
         return Hash.Get_SHA_256((search_key + Cuckoo_Hash.Get_K_d()).getBytes(StandardCharsets.UTF_8));
     }
-
-
 }
