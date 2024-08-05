@@ -8,7 +8,7 @@ public class NewDVH_Tool {
         int size;
         int n = Tools.CalculateNumberOfDBEntries(filePath);
         double c = 0.125;
-        size = (int) (c * n / 16);
+        size = (int) (c * n / 8);
         return size;
     }
 

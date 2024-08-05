@@ -8,7 +8,6 @@ public class Update_Query_NewDVH {
 
     public static ArrayList<String> Run(String key, int size, ArrayList<NodeSet> Position) {
         ArrayList<String> Result = new ArrayList<>();//Result中记录查询到的数据
-
         String kappa = HashKit.sha1(key + 0 + 1);
         BigInteger tmp_3 = new BigInteger(kappa, 16);
         int root = tmp_3.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
