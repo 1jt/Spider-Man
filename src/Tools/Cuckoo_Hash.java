@@ -31,7 +31,8 @@ public class Cuckoo_Hash implements Serializable {
     public ArrayList<KV> Get_Stash(){ return stash;}
 
     // 记录存进去的元素，一旦被踢出，可以避免重复计算
-    private static Map<String,Integer> leave_map = new HashMap<>();
+    // TODO 把该成员变量变为函数内部的变量，没必要保存，而且绝对不能静态
+    private Map<String,Integer> leave_map = new HashMap<>();
     public void Leave_Map_Clear() { leave_map.clear();}
 
     public Cuckoo_Hash(){}
@@ -59,7 +60,7 @@ public class Cuckoo_Hash implements Serializable {
         for(int i=0;i<cuckoo_table.length;i++) {
             if (cuckoo_table[i] == -1) {
                 cuckoo_table[i] = random.nextInt(1000000);
-                EMM[i] = AESUtil.encrypt(K_e,("dummy_dummy_dum_"+cuckoo_table[i]).getBytes(StandardCharsets.UTF_8));
+                EMM[i] = AESUtil.encrypt(K_e,("dummy,dummy,"+cuckoo_table[i]).getBytes(StandardCharsets.UTF_8));
             }else{
                 EMM[i]=AESUtil.encrypt(K_e,(kv_list[cuckoo_table[i]].key+","+kv_list[cuckoo_table[i]].value).getBytes(StandardCharsets.UTF_8));
             }
@@ -81,11 +82,12 @@ public class Cuckoo_Hash implements Serializable {
         for(int i=0;i<cuckoo_table.length;i++) {
             if (cuckoo_table[i] == -1) {
                 cuckoo_table[i] = random.nextInt(1000000);
-                EMM[i] = AESUtil.encrypt(K_e,("dummy_dummy_dum_"+cuckoo_table[i]).getBytes(StandardCharsets.UTF_8));
+                EMM[i] = AESUtil.encrypt(K_e,("dummy,dummy,"+cuckoo_table[i]).getBytes(StandardCharsets.UTF_8));
             }else{
                 EMM[i]=AESUtil.encrypt(K_e,(kl_list[cuckoo_table[i]].key+","+kl_list[cuckoo_table[i]].length).getBytes(StandardCharsets.UTF_8));
             }
         }
+        Leave_Map_Clear();
     }
 
     // 用于 dprfMM 的建立函数
@@ -103,11 +105,7 @@ public class Cuckoo_Hash implements Serializable {
                 // 利用 GGM 结构生成哈希值
                 byte[] father_Node;
                 String value = kv_list[index].value;
-                // 增加对VHDSSE中更新操作的支持
-                if(k.endsWith("add")||k.endsWith("del"))
-                    father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(value.substring(5,value.length()-4)), 2, level));
-                else
-                    father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(value.substring(5)), 2, level));
+                father_Node = GGM.Doub_GGM_Path(Hash.Get_SHA_256((kv_list[index].key+K_d).getBytes(StandardCharsets.UTF_8)), level, tool.DecimalConversion(Integer.parseInt(value.substring(5)), 2, level));
                 // 第一张表中的位置
                 Left_Node = GGM.Map2Range(Arrays.copyOfRange(father_Node, 1 , 9 ),table_size,0);
                 leave_map.put(k0,Left_Node);
