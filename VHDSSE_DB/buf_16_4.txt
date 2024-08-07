@@ -1,6 +1,0 @@
-Key2432=Value3
-Key1660=Value11
-Key5398=Value11
-Key2149=Value1
-Key1255=Value1
-Key917=Value5

@@ -1,6 +1,0 @@
-Key130=Value0
-Key80=Value27
-Key91=Value50
-Key240=Value56
-Key89=Value71
-Key240=Value21

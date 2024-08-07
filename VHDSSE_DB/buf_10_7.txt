@@ -1,6 +1,0 @@
-Key4=Value69
-Key1=Value14
-Key2=Value82
-Key13=Value60
-Key10=Value102
-Key13=Value44

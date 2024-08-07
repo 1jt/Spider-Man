@@ -1,6 +1,0 @@
-Key84=Value1
-Key61=Value25
-Key36=Value16
-Key50=Value20
-Key111=Value31
-Key36=Value20
