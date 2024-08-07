@@ -14,6 +14,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+
 import dpMM.*;
 import VHDSSE.*;
 
@@ -95,7 +97,7 @@ public class test {
 
         // test dprfMM
 //        System.out.println("----------------------------------------------test dprfMM-------------------------------------------");
-//        String filename = "Shuffle/DB_zipf/Zipf_9_118.ser";
+//        String filename = "Shuffle/DB_zipf/Zipf_9_113.ser";
 //        int[] params = tool.Get_Total_Max_Num(filename);
 //
 //        // 不要求中间结果的情况下，以下两行已经包含了所有操作
@@ -145,7 +147,7 @@ public class test {
 
         // test dpMM
 //        System.out.println("----------------------------------------------test dpMM-------------------------------------------");
-//        String filename = "DB_zipf/Zipf_15_3688.ser";
+//        String filename = "DB_zipf/Zipf_9_113.ser";
 //        dpMM dp = new dpMM(filename);
 //        ArrayList<String> result = dp.DpQuery("Key1049");
 //
@@ -173,14 +175,19 @@ public class test {
 
         // test VHDSSE
         System.out.println("----------------------------------------------test VHDSSE-------------------------------------------");
-        String filename = "Shuffle/DB_zipf/Zipf_9_118.ser";
-        int[] params = tool.Get_Total_Max_Num(filename);
-        VHDSSE vhdsse = new VHDSSE(params[0]-1,params[1],filename);
-        SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
-        VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_118.ser");
+//        String filename = "Shuffle/DB_zipf/Zipf_9_117.ser";
+//        int[] params = tool.Get_Total_Max_Num(filename);
+//        VHDSSE vhdsse = new VHDSSE(params[0],params[1],filename);
+//        SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
+        VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_117.ser");
         assert vh != null;
-        vh.VHDSSE_Query("Key3");
-
+        vh.Update();
+        // TODO 写一下多次查询的
+        ArrayList<String> result = vh.VHDSSE_Query("Key10");
+        System.out.println("\nFinal Result: ");
+        for (String s : result) {
+            System.out.print(s + " ");
+        }
 
         // test Serial
 //        dprfMM dprf = new dprfMM(params[0],params[1],filename);
@@ -201,6 +208,7 @@ public class test {
 //        for (String s : result) {
 //            System.out.print(s + " ");
 //        }
+
 
 
 

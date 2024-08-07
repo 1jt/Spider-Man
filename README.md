@@ -438,8 +438,11 @@ for (byte[] ciphertext : ServerResult) {
 - `VHDSSE(int numPairs, int maxVolume, String filename)`
   - 构造函数，建立 VHDSSE 方案
     - 第二种构造方式：`VHDSSE(String filename)` : 从文件名中获取参数（非通用）
+  - `int getMin()`
+    - 由构造函数调用，计算参数`min`的值
   - `Setup(String filename)`
     - 由构造函数调用，建立 Cuckoo Filter
+    - `dprfMM Setup(KV[] kv_list)`: 多态函数，根据数据集建立 dprfMM 方案
     - `byte[][] EncryptEMM(byte[] K, ArrayList<KV> Key_Value)`
       - 由Setup函数调用，加密 stash 和 buf
     - `int f(int n)`
@@ -448,12 +451,48 @@ for (byte[] ciphertext : ServerResult) {
   - 查询函数，返回查询结果
   - `Search_stash_buf(String search_key, ArrayList<String> ClientResult,byte[][] stash,byte[][] buf)`
     - 由查询函数调用，用于客户端查询 stash 和 buf
+  - `ArrayList<String> Judge_result(ArrayList<String> result)`
+    - 由查询函数调用，判断结果并进行错误校验
 - `byte[] GenSearchToken(String search_key)`
   - 由查询函数调用，生成查询令牌
   - 提供静态版本参考 dprfMM
 - `ArrayList<byte[]> VHDSSE_Query_Server(String search_key)`
   - 返回服务器查询结果（密文）
-- 
+- `void Update(KV kv)`
+  - 更新函数，用于更新数据集
+  - `ArrayList<dprfMM> Find_EDB(int DATA_SIZE)`
+    - 根据数据集大小，提取需要返回的数据库
+  - `void Get_stash_buf(ArrayList<KV> EDB_db)`
+    - 提取stash 和 buf中的数据
+  - `ArrayList<KV> Neutralize_add_del(ArrayList<KV> EDB_data)`
+    - 中和添加和删除
+- `void Update()`
+  - 用于多次更新数据集
+  - 操作为`add`和`del`
+  - 键值对和操作任意一项为`q`,退出
+  - 提供是否保存修改的选项
+    - 如果保存，将修改后的数据集写入文件
+
+#### 使用示例
+
+```java
+// 初始化方案并写入文件
+System.out.println("----------------------------------------------test VHDSSE-------------------------------------------");
+String filename = "Shuffle/DB_zipf/Zipf_9_117.ser";
+int[] params = tool.Get_Total_Max_Num(filename);
+VHDSSE vhdsse = new VHDSSE(params[0],params[1],filename);
+SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
+
+// 序列化读取 + 更新 + 查询
+VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_117.ser");
+assert vh != null;
+vh.Update();
+ArrayList<String> result = vh.VHDSSE_Query("Key10");
+System.out.println("\nFinal Result: ");
+for (String s : result) {
+    System.out.print(s + " ");
+}
+```
 
 ## 五. 共享树型方案（NewDVH）
 
