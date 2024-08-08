@@ -1,6 +1,17 @@
+import DataGen.KeyValueGenerator;
+
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.BindException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import Tools.*;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class NewDVH_Tool {
     //计算size大小
@@ -33,7 +44,22 @@ public class NewDVH_Tool {
         return null;
     }
 
+    public static String Encry(String key,String value) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException, UnsupportedEncodingException {
+        byte[] enkey = Hash.Get_SHA_256(key.getBytes());//将输入的关键字转换为加密关键字
+        byte[] envalue = value.getBytes();//转换输入的value
+        byte[] encrypted = AESUtil.encrypt(enkey, envalue);//加密
+        String s = new String(encrypted,"ISO-8859-1");//转换为字符串输出
+        return s;
 
+    }
+
+    public static String Decry(String key , String value) throws UnsupportedEncodingException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        byte[] enkey = Hash.Get_SHA_256(key.getBytes());//将输入的关键字转换为加密关键字
+        byte[] envalue = value.getBytes("ISO-8859-1");//转换输入的value
+        byte[] decrypted = AESUtil.decrypt(enkey, envalue);
+        String s = new String(decrypted,"ISO-8859-1");//转换为字符串输出
+        return s;
+    }
 
 
     //为删除功能计算更新pos序列，需要输入目标key ，value ，查询pos序列，查询返回结果，尺寸size
@@ -43,11 +69,10 @@ public class NewDVH_Tool {
         int num = 0;//记录更新序列大小
         int num_1 = 0;//记录1的数量
         int num_0 = 0;//记录0的数量
-        String val = key + "+Value" + value;
         //遍历查找返回结果，直到查找到目标数据为止
         for (String s : query_result) {
             num += 1;
-            if (Objects.equals(val, s))
+            if (Objects.equals(value, s))
                 break;
         }
         //遍历查询pos序列，记录0和1的数量
@@ -80,7 +105,7 @@ public class NewDVH_Tool {
         int num = 0;//记录更新序列大小
         int num_1 = 0;//记录1的数量
         int num_0 = 0;//记录0的数量
-        String dummy = key+ "+ValueDummy";
+        String dummy = "Dummy";
         boolean next_pos = true;
         //遍历查找返回结果，判断是否有dummy，碰到dummy就停止
         for (String s : query_result) {

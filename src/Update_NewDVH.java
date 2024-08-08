@@ -1,5 +1,13 @@
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.io.*;
+import Tools.*;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class Update_NewDVH {
 
@@ -27,7 +35,7 @@ public class Update_NewDVH {
         //在节点库中找到目标节点后，执行删除
         for (NodeSet node : database) {
             if (node.getNode().getId().getX() == x && node.getNode().getId().getY() == y) {
-                node.getNode().setData(key + "+Value" + dummy);
+                node.getNode().setData(dummy);
             }
         }
 
@@ -36,13 +44,18 @@ public class Update_NewDVH {
 
     }
 
-    public static ArrayList<NodeSet> AddUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException {
+    public static void AddUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 
         //从键盘读取要添加的值，形式为 Key** + Value**
         BufferedReader index = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("输入要添加的value值");
         String value = index.readLine();
-        String data = key + "+Value" + value;//因为更新之前对目标进行过查询，知道key
+        String data = "Value" + value;//因为更新之前对目标进行过查询，知道key
+        byte[] enkey = Hash.Get_SHA_256(key.getBytes());
+        byte[] envalue = value.getBytes();
+        byte[] endata = AESUtil.encrypt(enkey, envalue);
+        String st_endata = new String(endata,"ISO-8859-1");
+
 
 
 //        long startTime = System.nanoTime(); // 记录开始时间
@@ -66,7 +79,7 @@ public class Update_NewDVH {
             //遍历数据库找到父亲节点
             for (NodeSet node : database) {
                 if (node.getNode().getId().getX() == x && node.getNode().getId().getY() == y) {
-                    TreeNode<String> new_node = new TreeNode<>(data);
+                    TreeNode<String> new_node = new TreeNode<>(st_endata);
 
                     //更新序列最后一位表示目标几点和其父亲节点的关系
                     if (update_list.get(update_list.size() - 1) == 0) {
@@ -98,7 +111,7 @@ public class Update_NewDVH {
             //找到对应节点，覆盖数据
             for (NodeSet node : database) {
                 if (node.getNode().getId().getX() == x && node.getNode().getId().getY() == y) {
-                    node.getNode().setData(data);
+                    node.getNode().setData(st_endata);
                 }
             }
         }
@@ -111,7 +124,6 @@ public class Update_NewDVH {
 
         //清空更新序列，为下次更新做准备
         Update_Query_NewDVH.list.clear();
-        return database;
 
     }
 }
