@@ -14,7 +14,6 @@ public class NewDVH_Test {
         int size = NewDVH_Tool.Size(element);
         Setup_NewDVH.Test(element);
         UpdateTest_NewDVH.New_DVH_TestQuery(Setup_NewDVH.Position,size);//测查询通信开销
-
 //        long startTime = System.nanoTime(); // 记录开始时间
 //        // 需要测试运行时间的代码段区间
 //

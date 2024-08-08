@@ -54,14 +54,10 @@ public class Setup_NewDVH {
                 root = tmp.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
 
                 //加密模块
-                byte[] enkey = Hash.Get_SHA_256(key.getBytes());
-                byte[] envalue = value.getBytes();
-                byte[] endata = AESUtil.encrypt(enkey, envalue);
-                String st_endata = new String(endata,"ISO-8859-1");
+                String st_endata = NewDVH_Tool.Encry(key,value);
 
                 // 如果对应根节点没有数据，则执行初始化操作
                 if (roots[root].getData() == null) {
-//                    roots[root].setData(key + "+" + value);
                     roots[root].setData(st_endata);
 
                     //计算根节点在坐标轴的位置
@@ -77,8 +73,6 @@ public class Setup_NewDVH {
                 TreeNode<String> node_tmp = roots[root];//node_temp表示当前节点
                 int count = 0; // 关键词所在层数
                 boolean flag = false; // 放入成功指示符
-//                String input = key + "+" + value;
-                String input = st_endata;
 
                 STOP:
                 while (!flag) {
@@ -106,7 +100,7 @@ public class Setup_NewDVH {
                                 }
                             }
                             //位置没人，建立一个节点，并存入Position中
-                            TreeNode<String> node_left = new TreeNode<String>(input);
+                            TreeNode<String> node_left = new TreeNode<String>(st_endata);
                             node_tmp.setLeft(node_left);
                             node_tmp.setLeftId(NodePosition);
                             NodeSet node_cash = new NodeSet(NodePosition, node_left);
@@ -134,7 +128,7 @@ public class Setup_NewDVH {
                                     continue STOP;
                                 }
                             }
-                            TreeNode<String> node_right = new TreeNode<String>(input);
+                            TreeNode<String> node_right = new TreeNode<String>(st_endata);
                             node_tmp.setRight(node_right);
                             node_tmp.setRightId(NodePosition);
                             NodeSet node_cash = new NodeSet(NodePosition, node_right);
