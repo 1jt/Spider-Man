@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 
 import dpMM.*;
 import VHDSSE.*;
+import chFB.*;
 
 
 public class test {
@@ -174,40 +176,31 @@ public class test {
 //        }
 
         // test VHDSSE
-        System.out.println("----------------------------------------------test VHDSSE-------------------------------------------");
+//        System.out.println("----------------------------------------------test VHDSSE-------------------------------------------");
 //        String filename = "Shuffle/DB_zipf/Zipf_9_117.ser";
 //        int[] params = tool.Get_Total_Max_Num(filename);
 //        VHDSSE vhdsse = new VHDSSE(params[0],params[1],filename);
 //        SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
-        VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_117.ser");
-        assert vh != null;
-        vh.Update();
-        // TODO 写一下多次查询的
-        ArrayList<String> result = vh.VHDSSE_Query("Key10");
-        System.out.println("\nFinal Result: ");
-        for (String s : result) {
-            System.out.print(s + " ");
-        }
+//        VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_117.ser");
+//        assert vh != null;
+//        ArrayList<String> result = vh.VHDSSE_Query("lyf");
+//        System.out.println("\nFinal Result: ");
+//        for (String s : result) {
+//            System.out.print(s + " ");
+//        }
+//        System.out.println();
+//        vh.Update();
+//        // TODO 写一下多次查询的
+//        ArrayList<String> result_2 = vh.VHDSSE_Query("lyf");
+//        System.out.println("\nFinal Result: ");
+//        for (String s : result_2) {
+//            System.out.print(s + " ");
+//        }
 
-        // test Serial
-//        dprfMM dprf = new dprfMM(params[0],params[1],filename);
-//        SerialData.Serial_DB_Out(dprf,filename.split("/")[2]);
-//        dprfMM dprf = SerialData.Serial_dprfMM_In("Zipf_9_118.ser");
-//        // dprfMM dprf = new dprfMM(filename); // 简化构造
-//        assert dprf != null;
-//        ArrayList<String> result = dprf.DprfQuery("Key0");
-//
-//        System.out.println("\nFinal Result: ");
-//        for (String s : result) {
-//            System.out.print(s + " ");
-//        }
-//        dpMM dp = SerialData.Serial_dpMM_In("Zipf_15_3688.ser");
-//        ArrayList<String> result = dp.DpQuery("Key1049");
-//
-//        System.out.println("\nFinal Result: ");
-//        for (String s : result) {
-//            System.out.print(s + " ");
-//        }
+        // test chFB
+        System.out.println("----------------------------------------------test chFB-------------------------------------------");
+        chFB chfb = new chFB();
+
 
 
 

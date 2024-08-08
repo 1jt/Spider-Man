@@ -1,5 +1,6 @@
-package Tools;
+package dprfMM;
 
+import Tools.*;
 import dprfMM.GGM;
 
 import java.io.Serializable;
@@ -8,9 +9,11 @@ import java.util.*;
 
 public class Cuckoo_Hash implements Serializable {
 
+    // TODO 该变量应该是随机生成的，不应该是固定的
     private static long K_d=456;// 以 GGM 结构为基础的哈希函数的密钥
     public static long Get_K_d(){ return K_d;}
 
+    // TODO 该变量应该是随机生成的，不应该是固定的
     private static byte[] K_e = "7975922666f6eb02".getBytes(StandardCharsets.UTF_8);// AES 加密的密钥
     public static byte[] Get_K_e() { return K_e; }
 
