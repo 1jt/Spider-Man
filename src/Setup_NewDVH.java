@@ -3,10 +3,18 @@ import jdk.internal.dynalink.beans.StaticClass;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.ArrayList;
+import Tools.*;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -15,7 +23,7 @@ public class Setup_NewDVH {
     public static ArrayList<NodeSet> Position = new ArrayList<>();//存储所有NodeSet
 
 
-    public static void Test(String filePath) throws IOException {
+    public static void Test(String filePath) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         int cycle_num = 1;  // 构建次数
 //        System.out.println("----------" + filePath + " starts Setup calculation----------");
         for (int test_num = 0; test_num < cycle_num; test_num++) {
@@ -45,9 +53,17 @@ public class Setup_NewDVH {
                 BigInteger tmp = new BigInteger(kappa, 16);
                 root = tmp.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
 
+                //加密模块
+                byte[] enkey = Hash.Get_SHA_256(key.getBytes());
+                byte[] envalue = value.getBytes();
+                byte[] endata = AESUtil.encrypt(enkey, envalue);
+                String st_endata = new String(endata,"ISO-8859-1");
+
                 // 如果对应根节点没有数据，则执行初始化操作
                 if (roots[root].getData() == null) {
-                    roots[root].setData(key + "+" + value);
+//                    roots[root].setData(key + "+" + value);
+                    roots[root].setData(st_endata);
+
                     //计算根节点在坐标轴的位置
                     MMPoint NodePosition = new MMPoint(root, size - 1 - root);
                     roots[root].setId(NodePosition);
@@ -61,7 +77,8 @@ public class Setup_NewDVH {
                 TreeNode<String> node_tmp = roots[root];//node_temp表示当前节点
                 int count = 0; // 关键词所在层数
                 boolean flag = false; // 放入成功指示符
-                String input = key + "+" + value;
+//                String input = key + "+" + value;
+                String input = st_endata;
 
                 STOP:
                 while (!flag) {

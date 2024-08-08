@@ -1,18 +1,26 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import Tools.*;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class UpdateTest_NewDVH {
 
 
     //第一步查询，测试后,结果正确
-    public static void New_DVH_TestQuery(ArrayList<NodeSet> Position, int size) throws IOException {
+    public static void New_DVH_TestQuery(ArrayList<NodeSet> Position, int size) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         String query_key = "";
         ArrayList<String> Result = new ArrayList<>();
 
-        int Query_num = 100;//查询次数
-        int Query_cycle_time = 100;//查询关键字个数
+        int Query_num = 1;//查询次数
+        int Query_cycle_time = 1;//查询关键字个数
         int avage_num = 0;
         int max_num = 0;
 
@@ -22,23 +30,29 @@ public class UpdateTest_NewDVH {
 
             for (int times = 0; times < Query_cycle_time; times++) {
                 Random rd = new Random();
-                int index = rd.nextInt(120); //更新赋值
+//                int index = rd.nextInt(120); //更新赋值
+                int index = 0;
                 query_key = "Key" + index;
+                byte[] enkey = Hash.Get_SHA_256(query_key.getBytes("ISO-8859-1"));//计算解密秘钥
+
                 Result = Update_Query_NewDVH.Run(query_key, size, Position);
                 result_num += Result.size();
                 //输出查到的值，判断是否无损
                 double num = 0;
                 for (String s : Result
                 ) {
-                    String[] keyValue = s.split("\\+");
-                    if (Objects.equals(query_key, keyValue[0])) {
-//                        System.out.println(query_key +  "value=" + keyValue[1]);
-                        num += 1;
-                    }
+                    byte[] en = s.getBytes("ISO-8859-1");//解密过程
+                    byte[] decrypted = AESUtil.decrypt(enkey, en);
+                    String s2 = new String(decrypted,"ISO-8859-1");
+                    System.out.println(s2);
+//                    String[] keyValue = s.split("\\+");//字符串未加密形态
+//                    if (Objects.equals(query_key, keyValue[0])) {
+//                        num += 1;
+//                    }
                 }
-                if (num == Result.size()) {
-                    judge_num += 1;//记录暴露真实数量的查询
-                }
+//                if (num == Result.size()) {
+//                    judge_num += 1;//记录暴露真实数量的查询
+//                }
 
             }
             max_num = Math.max(max_num,judge_num);
