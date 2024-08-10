@@ -1,6 +1,9 @@
 import javafx.css.StyleableObjectProperty;
 import jdk.internal.dynalink.beans.StaticClass;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -10,11 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.ArrayList;
-import Tools.*;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -54,12 +52,11 @@ public class Setup_NewDVH {
                 root = tmp.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
 
                 //加密模块
-                String st_endata = NewDVH_Tool.Encry(key,value);
+                byte[] envalue = NewDVH_Tool.Encrypt(key,value);
 
                 // 如果对应根节点没有数据，则执行初始化操作
                 if (roots[root].getData() == null) {
-                    roots[root].setData(st_endata);
-
+                    roots[root].setData(key + "+" + value);
                     //计算根节点在坐标轴的位置
                     MMPoint NodePosition = new MMPoint(root, size - 1 - root);
                     roots[root].setId(NodePosition);
@@ -73,6 +70,7 @@ public class Setup_NewDVH {
                 TreeNode<String> node_tmp = roots[root];//node_temp表示当前节点
                 int count = 0; // 关键词所在层数
                 boolean flag = false; // 放入成功指示符
+                String input = key + "+" + value;
 
                 STOP:
                 while (!flag) {
@@ -100,7 +98,7 @@ public class Setup_NewDVH {
                                 }
                             }
                             //位置没人，建立一个节点，并存入Position中
-                            TreeNode<String> node_left = new TreeNode<String>(st_endata);
+                            TreeNode<String> node_left = new TreeNode<String>(input);
                             node_tmp.setLeft(node_left);
                             node_tmp.setLeftId(NodePosition);
                             NodeSet node_cash = new NodeSet(NodePosition, node_left);
@@ -128,7 +126,7 @@ public class Setup_NewDVH {
                                     continue STOP;
                                 }
                             }
-                            TreeNode<String> node_right = new TreeNode<String>(st_endata);
+                            TreeNode<String> node_right = new TreeNode<String>(input);
                             node_tmp.setRight(node_right);
                             node_tmp.setRightId(NodePosition);
                             NodeSet node_cash = new NodeSet(NodePosition, node_right);
