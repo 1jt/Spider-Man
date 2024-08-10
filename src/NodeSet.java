@@ -1,4 +1,6 @@
-public class NodeSet {
+import java.io.Serializable;
+
+public class NodeSet implements Serializable {
     //每个节点，对应着一个直角坐标系坐标，和一个树节点信息，封装在NodeSet里
     private MMPoint position;
     private TreeNode node;

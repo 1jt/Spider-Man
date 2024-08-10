@@ -1,10 +1,9 @@
-import java.io.IOException;
-import java.net.BindException;
+import java.io.*;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+
 import Tools.*;
 
 import javax.crypto.BadPaddingException;
@@ -54,6 +53,37 @@ public class NewDVH_Tool {
         byte[] decrypted = AESUtil.decrypt(enkey, envalue);
         String s = new String(decrypted);
         return s;
+    }
+
+    //序列化存储
+    public static void Serial_NewDVH_Out(ArrayList<NodeSet> position, String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream("DB/NewDVH/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(position);
+
+            oos.close();
+            System.out.println("NewDVH generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+
+
+    //序列化读取
+    public static NodeSet Serial_NewDVH_In(String fileName) {
+        try {
+            FileInputStream fileIn = new FileInputStream("DB/NewDVH/" + fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (NodeSet) in.readObject();
+        } catch (EOFException e) {
+            System.out.println("End of file");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
