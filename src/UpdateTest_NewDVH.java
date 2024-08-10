@@ -40,8 +40,8 @@ public class UpdateTest_NewDVH {
                 double num = 0;
                 for (String s : Result
                 ) {
-                    String decresult = NewDVH_Tool.Decry(query_key,s);
-                    System.out.println(decresult);
+
+                    System.out.println(s);
                 }
 //                if (num == Result.size()) {
 //                    judge_num += 1;//记录暴露真实数量的查询

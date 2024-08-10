@@ -74,7 +74,36 @@ public class SerialData {
         return null;
     }
 
+    //数据序列化读入（NewDVH）
+    public static NodeSet Serial_NewDVH_In(String fileName) {
+        try {
+            FileInputStream fileIn = new FileInputStream("DB/NewDVH/" + fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (NodeSet) in.readObject();
+        } catch (EOFException e) {
+            System.out.println("End of file");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     // 数据集序列化存储（NewDVH）
+    public static void Serial_DB_Out_DVH(ArrayList<NodeSet> position, String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream("DB/NewDVH/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(position);
+
+            oos.close();
+            System.out.println("dprfMM generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+
+    // 数据集序列化存储（dprfMM）
     public static void Serial_DB_Out(dprfMM dprf,String fileName) {
         try {
             FileOutputStream fos = new FileOutputStream("DB/dprfMM/" + fileName);
@@ -89,36 +118,6 @@ public class SerialData {
             System.err.println("Failed to write key-value pairs to " + fileName);
         }
     }
-
-    // 数据集序列化存储（dprfMM）
-    public static void Serial_DB_Out(NodeSet position, String fileName) {
-        try {
-            FileOutputStream fos = new FileOutputStream("DB/NewDVH/" + fileName);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-
-            oos.writeObject(position);
-
-            oos.close();
-            System.out.println("dprfMM generated and saved to " + fileName);
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Failed to write key-value pairs to " + fileName);
-        }
-    }
-    //数据序列化读入（NewDVH）
-    public static NodeSet Serial_NewDVH_In(String fileName) {
-        try {
-            FileInputStream fileIn = new FileInputStream("DB/NewDVH/" + fileName);
-            ObjectInputStream in = new ObjectInputStream(fileIn);
-            return (NodeSet) in.readObject();
-        } catch (EOFException e) {
-            System.out.println("End of file");
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
     public static dprfMM Serial_dprfMM_In(String fileName) {
         try {
