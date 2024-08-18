@@ -203,7 +203,38 @@ public class test {
         int[] params = tool.Get_Total_Max_Num(filename);
         chFB chfb = new chFB(params[0],params[1],filename);
         TreeNode<KV> root = new TreeNode<KV>(new KV("key0","value0"));
-        System.out.println(root.toString());
+        TreeNode<KV> node1 = new TreeNode<KV>(new KV("key1","value1"));
+        TreeNode<KV> node2 = new TreeNode<KV>(new KV("key2","value2"));
+        TreeNode<KV> node3 = new TreeNode<KV>(new KV("key3","value3"));
+        TreeNode<KV> node4 = new TreeNode<KV>(new KV("key4","value4"));
+        TreeNode<KV> node5 = new TreeNode<KV>(new KV("key5","value5"));
+        TreeNode<KV> node6 = new TreeNode<KV>(new KV("key6","value6"));
+        TreeNode<KV> node7 = new TreeNode<KV>(new KV("key7","value7"));
+        TreeNode<KV> node8 = new TreeNode<KV>(new KV("key8","value8"));
+        TreeNode<KV> node9 = new TreeNode<KV>(new KV("key9","value9"));
+        TreeNode<KV> node10 = new TreeNode<KV>(new KV("key10","value10"));
+        TreeNode<KV> node11 = new TreeNode<KV>(new KV("key11","value11"));
+        TreeNode<KV> node12 = new TreeNode<KV>(new KV("key12","value12"));
+        TreeNode<KV> node13 = new TreeNode<KV>(new KV("key13","value13"));
+        TreeNode<KV> node14 = new TreeNode<KV>(new KV("key14","value14"));
+        TreeNode<KV> node15 = new TreeNode<KV>(new KV("key15","value15"));
+
+        root.setLeft(node1);
+        root.setRight(node2);
+        node1.setLeft(node3);
+        node1.setRight(node4);
+        node2.setLeft(node5);
+        node2.setRight(node6);
+        node3.setLeft(node7);
+        node3.setRight(node8);
+        node4.setLeft(node9);
+        node4.setRight(node10);
+        node5.setLeft(node11);
+        node5.setRight(node12);
+        node6.setLeft(node13);
+        node6.setRight(node14);
+        System.out.println();
+        TreeOperation.show(root);
 
 
 
