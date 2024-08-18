@@ -199,7 +199,11 @@ public class test {
 
         // test chFB
         System.out.println("----------------------------------------------test chFB-------------------------------------------");
-        chFB chfb = new chFB();
+        String filename = "Shuffle/DB_zipf/Zipf_9_109.ser";
+        int[] params = tool.Get_Total_Max_Num(filename);
+        chFB chfb = new chFB(params[0],params[1],filename);
+        TreeNode<KV> root = new TreeNode<KV>(new KV("key0","value0"));
+        System.out.println(root.toString());
 
 
 

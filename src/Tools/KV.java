@@ -35,5 +35,13 @@ public class KV implements Serializable {
         return Objects.hash(key, value); // 根据 key 和 value 生成哈希码
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                key + ',' +
+                value +
+                '}';
+    }
+
 
 }
