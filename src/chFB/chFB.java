@@ -32,7 +32,7 @@ public class chFB implements Serializable {
     private final byte[] K_u;
     public byte[] Get_K_u() { return K_u; }
 
-    public HashMap<String,ArrayList<String>> EMM_u = new HashMap<>();
+    public HashMap<byte[],byte[]> EMM_u = new HashMap<>();
     public HashMap<String, Pair<Integer, Integer>> MM_st = new HashMap<>();
 
 
@@ -54,10 +54,20 @@ public class chFB implements Serializable {
         Stash = twoChoiceHash.Get_Stash();
     }
 
-    public void Update(KV kv){
-        if (!MM_st.containsKey(kv.key)){
-            MM_st.put(kv.key,new Pair<>(0,0));
+    public void Update(String key,ArrayList<String> v,String op) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        if (!MM_st.containsKey(key)){
+            MM_st.put(key,new Pair<>(0,0));
         }
+        String x = Arrays.toString(K_u) + key + MM_st.get(key).getKey();
+        byte[] hash_x = Hash.Get_SHA_256(x.getBytes(StandardCharsets.UTF_8));
+        String y = Arrays.toString(hash_x) + MM_st.get(key).getValue();
+        byte[] hash_y = Hash.Get_SHA_256(y.getBytes(StandardCharsets.UTF_8));
+        StringBuilder z = new StringBuilder(op);
+        for (String string : v) z.append(",").append(string);
+        for (int i = v.size();i<l;i++) z.append(",").append("null");
+        byte[] encrypt_z = AESUtil.encrypt(twoChoiceHash.Get_K_enc(), z.toString().getBytes(StandardCharsets.UTF_8));
+        EMM_u.put(hash_y,encrypt_z);
+        MM_st.put(key,new Pair<>(MM_st.get(key).getKey(),MM_st.get(key).getValue() + 1));
     }
 
     public ArrayList<String> Query(String key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -82,14 +92,14 @@ public class chFB implements Serializable {
             String string = new String(AESUtil.decrypt(twoChoiceHash.Get_K_enc(), et));
             String[] kv = string.split(",");
             if (kv[0].equals(key) && !duplicate_set.contains(kv[1])){
-                result_client.add(string);
+                result_client.add(kv[1]);
                 duplicate_set.add(kv[1]);
             }
         }
         // Query stash
         for (KV kv:Stash)
             if (kv.key.equals(key))
-                result_client.add(kv.key + "," + kv.value);
+                result_client.add(kv.value);
 
         return result_client;
     }

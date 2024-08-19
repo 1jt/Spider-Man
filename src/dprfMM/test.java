@@ -202,6 +202,12 @@ public class test {
         String filename = "Shuffle/DB_zipf/Zipf_9_109.ser";
         int[] params = tool.Get_Total_Max_Num(filename);
         chFB chfb = new chFB(params[0],params[1],filename);
+        ArrayList<String> v = new ArrayList<>();
+        v.add("Value110");
+        v.add("Value111");
+        v.add("Value112");
+
+        chfb.Update("Key0",v,"add");
         chfb.Query_Update();
 
 
