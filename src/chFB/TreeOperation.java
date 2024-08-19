@@ -6,13 +6,13 @@ import java.util.Arrays;
 
 public class TreeOperation {
     // 创建 一颗 满二叉树
-    public static TreeNode<KV> createFullBinaryTree(int depth) {
+    public static TreeNode createFullBinaryTree(int depth) {
         if (depth <= -1) {
             return null; // 基本条件：深度为 0，返回 null
         }
 
         // 创建当前节点
-        TreeNode<KV> node = new TreeNode(); // 节点值设置为 null，表示空节点
+        TreeNode node = new TreeNode(); // 节点值设置为 null，表示空节点
 
         // 递归创建左子树和右子树
         node.setLeft(createFullBinaryTree(depth - 1));
@@ -40,24 +40,38 @@ public class TreeOperation {
         // 对数组进行初始化，默认为一个空格
         for (int i = 0; i < arrayHeight; i ++) {
             for (int j = 0; j < arrayWidth; j ++) {
-                res[i][j] = " ";
+                res[i][j] = "";
             }
         }
 
         // 从根节点开始，递归处理整个树
         writeArray(root, 0, 0, res, treeDepth);
+        // 计算每行的宽度
+        int[] len = new int[arrayHeight];
+        for (int i = 0; i < arrayHeight; i ++) {
+            int temp = 0;
+            for (int j = 0; j < res[i].length; j ++) {
+                temp += res[i][j].length();
+            }
+            len[i] = temp;
+        }
+        // 计算最后一行的宽度
+        len[arrayHeight - 1] += res[arrayHeight - 1].length;// 添加空格
+        int final_len = len[arrayHeight - 1];
+//        System.out.println("len: " + Arrays.toString(len));
+
 
         // 此时，已经将所有需要显示的元素储存到了二维数组中，将其拼接并打印即可
         for (int i = 0; i < arrayHeight; i ++) {
             StringBuilder sb = new StringBuilder();
-            int numSpace = (int) (arrayWidth/Math.pow(2,i)/2 * 14);
+            int numSpace = (int) Math.round ((final_len-len[i])/(Math.pow(2,i)+1));
+            if (numSpace == 0)
+                numSpace = 1;
+//            System.out.println("numSpace: " + numSpace);
             String spaces = String.format("%" + numSpace +"s", "");
 
             for (int j = 0; j < res[i].length; j ++) {
-                if (i == arrayHeight - 1) {
-                    sb.append(" ");
-                } else
-                    sb.append(spaces);
+                sb.append(spaces);
                 sb.append(res[i][j]);
             }
             System.out.println(sb.toString());
@@ -86,11 +100,4 @@ public class TreeOperation {
         }
     }
 
-    public static void preOrder(TreeNode treeNode) {
-        if (treeNode != null) {
-            System.out.print(treeNode.toString() + " ");
-            preOrder(treeNode.getLeft());
-            preOrder(treeNode.getRight());
-        }
-    }
 }

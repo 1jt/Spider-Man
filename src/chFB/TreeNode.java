@@ -45,8 +45,7 @@ public class TreeNode<T> implements Serializable {
 
     @Override
     public String toString() {
-        return "" +
-                data;
+        return "" + data;
     }
 
 }
