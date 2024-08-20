@@ -197,21 +197,20 @@ public class test {
 //            System.out.print(s + " ");
 //        }
 
-        // test chFB
-        System.out.println("----------------------------------------------test chFB-------------------------------------------");
-        String filename = "Shuffle/DB_zipf/Zipf_9_109.ser";
-        int[] params = tool.Get_Total_Max_Num(filename);
-        chFB chfb = new chFB(params[0],params[1],filename);
-        ArrayList<String> v = new ArrayList<>();
-        v.add("Value110");
-        v.add("Value111");
-        v.add("Value112");
+        /// test chFB
+        // 生成方案并序列化写入文件
+//        System.out.println("----------------------------------------------test chFB-------------------------------------------");
+//        String filename = "Shuffle/DB_zipf/Zipf_9_109.ser";
+//        chFB chfb = new chFB(filename);
+//        SerialData.Serial_DB_Out(chfb,filename.split("/")[2]);
 
-        chfb.Update("Key0",v,"add");
+        // 序列化读出并运行
+        chFB chfb = SerialData.Serial_chFB_In("Zipf_9_109.ser");
+        assert chfb != null;
         chfb.Query_Update();
 
 
-        // test show
+//         test show
 //        TreeNode<KV> root = new TreeNode<KV>(new KV("key0","value0"));
 //        TreeNode<KV> node1 = new TreeNode<KV>(new KV("key1","value1"));
 //        TreeNode<KV> node2 = new TreeNode<KV>(new KV("key2","value2"));

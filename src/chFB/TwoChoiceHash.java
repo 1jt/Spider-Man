@@ -28,7 +28,7 @@ public class TwoChoiceHash implements Serializable {
     private final byte[] K_enc;// AES 加密的密钥
     public byte[] Get_K_enc() { return K_enc; }
 
-    private ArrayList<KV> stash = new ArrayList<>();//store evicted elements
+    public ArrayList<KV> stash = new ArrayList<>();//store evicted elements
     public ArrayList<KV> Get_Stash(){ return stash;}
 
     public TwoChoiceHash(KV[] kv_list, int s, int h) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -107,7 +107,7 @@ public class TwoChoiceHash implements Serializable {
         return Hash.reduce((int) r, capacity);
     }
     // 计算树的非空最深处
-    public int CheckDeepest(int index, TreeNode<KV> root) {
+    public int CheckDeepest(int index, TreeNode root) {
         if (root.getData() != null)
             return -1;
         StringBuilder binary_index = new StringBuilder(Integer.toBinaryString(index));
@@ -152,16 +152,101 @@ public class TwoChoiceHash implements Serializable {
                 binary_index.insert(0, "0");
             }
         }
+        // if 用于将涉及到的节点从bin中剔除(可以省略后续的去重，而且方便后续 重新写入)
         TreeNode<byte[]> tmp = B[tree_index];
-        result.add(tmp.getData());
+        if (tmp.getData() != null){
+            result.add(tmp.getData());
+            tmp.setData(null);
+        }
+
         for (int i = 0; i < h; i++) {
             if (binary_index.charAt(i) == '0') {
                 tmp = tmp.getLeft();
-                result.add(tmp.getData());
+                if (tmp.getData() != null){
+                    result.add(tmp.getData());
+                    tmp.setData(null);
+                }
             } else {
                 tmp = tmp.getRight();
-                result.add(tmp.getData());
+                if (tmp.getData() != null){
+                    result.add(tmp.getData());
+                    tmp.setData(null);
+                }
             }
         }
+    }
+    public void WriteBack(String key,ArrayList<String> v,ArrayList<KV> unwanted,Set<Integer> bin) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        // write back Key
+        for (String value: v){
+            KV kv = new KV(key,value);
+            int G_0 = G(kv, 0);
+            int dep_0 = CheckDeepest((G_0 % Last_layer),B[G_0 / Last_layer]);
+            int G_1 = G(kv, 1);
+            int dep_1 = CheckDeepest((G_1 % Last_layer),B[G_1 / Last_layer]);
+            if (!bin.contains(G_0) || !bin.contains(G_1))
+                System.out.println("error");
+            if (dep_0 == -1 && dep_1 == -1)
+                stash.add(kv);
+            else if (dep_0 >= dep_1) {
+                TreeNode<byte[]> tmp = getTreeNode(G_0, dep_0);
+                tmp.setData(AESUtil.encrypt(K_enc, (kv.key+","+kv.value).getBytes(StandardCharsets.UTF_8)));
+            } else {
+                TreeNode<byte[]> tmp = getTreeNode(G_1, dep_1);
+                tmp.setData(AESUtil.encrypt(K_enc, (kv.key+","+kv.value).getBytes(StandardCharsets.UTF_8)));
+            }
+        }
+        // write back unwanted
+        for (KV kv:unwanted){
+            int G_0 = G(kv, 0);
+            int dep_0 = CheckDeepest((G_0 % Last_layer),B[G_0 / Last_layer]);
+            int G_1 = G(kv, 1);
+            int dep_1 = CheckDeepest((G_1 % Last_layer),B[G_1 / Last_layer]);
+            if (dep_0 == -1 && dep_1 == -1)
+                stash.add(kv);
+            else if (dep_0 >= dep_1) {
+                TreeNode<byte[]> tmp = getTreeNode(G_0, dep_0);
+                tmp.setData(AESUtil.encrypt(K_enc, (kv.key+","+kv.value).getBytes(StandardCharsets.UTF_8)));
+            } else {
+                TreeNode<byte[]> tmp = getTreeNode(G_1, dep_1);
+                tmp.setData(AESUtil.encrypt(K_enc, (kv.key+","+kv.value).getBytes(StandardCharsets.UTF_8)));
+            }
+        }
+        // padding bin
+        for(int i:bin){
+            StringBuilder binary_loc = new StringBuilder(Integer.toBinaryString(i));
+            if (binary_loc.length() < h) {
+                int diff = h - binary_loc.length();
+                for (int j = 0; j < diff; j++)
+                    binary_loc.insert(0, "0");
+            }
+            TreeNode<byte[]> tmp = B[i / Last_layer];
+            for (int j = 0; j < h; j++) {
+                if (binary_loc.charAt(j) == '0')
+                    tmp = tmp.getLeft();
+                else
+                    tmp = tmp.getRight();
+                if (tmp.getData() == null){
+                    tmp.setData(AESUtil.encrypt(K_enc,("dummy,dummy,"+ new Random().nextInt(1000000)).getBytes(StandardCharsets.UTF_8)));
+                }
+            }
+        }
+
+    }
+
+    private TreeNode<byte[]> getTreeNode(int G_0, int dep_0) {
+        StringBuilder binary_loc = new StringBuilder(Integer.toBinaryString(G_0 % Last_layer));
+        if (binary_loc.length() < h) {
+            int diff = h - binary_loc.length();
+            for (int i = 0; i < diff; i++)
+                binary_loc.insert(0, "0");
+        }
+        TreeNode<byte[]> tmp = B[G_0 / Last_layer];
+        for (int i = 0; i < dep_0; i++) {
+            if (binary_loc.charAt(i) == '0')
+                tmp = tmp.getLeft();
+            else
+                tmp = tmp.getRight();
+        }
+        return tmp;
     }
 }

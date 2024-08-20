@@ -21,12 +21,12 @@ public class TreeOperation {
         return node;
     }
     // 获得二叉树的深度（根节点的深度为 0）
-    public static int getTreeDepth(TreeNode<KV> root) {
+    public static int getTreeDepth(TreeNode root) {
         return root == null ? -1 : (1 + Math.max(getTreeDepth(root.getLeft()), getTreeDepth(root.getRight())));//保证根节点层数为0
     }
 
     // 打印可视化二叉树
-    public static void show(TreeNode<KV> root) {
+    public static void show(TreeNode root) {
         if (root == null) {
             return;
         }
@@ -78,7 +78,7 @@ public class TreeOperation {
         }
     }
 
-    private static void writeArray(TreeNode<KV> currNode, int rowIndex, int columnIndex, String[][] res, int treeDepth) {
+    private static void writeArray(TreeNode currNode, int rowIndex, int columnIndex, String[][] res, int treeDepth) {
         // 保证输入的树不为空
         if (currNode == null) return;
         // 先将当前节点保存到二维数组中
@@ -89,12 +89,10 @@ public class TreeOperation {
         // 若到了最后一层，则返回
         if (currLevel == treeDepth) return;
 
-        // 对左儿子进行判断，若有左儿子，则记录相应的"/"与左儿子的值
         if (currNode.getLeft() != null) {
             writeArray(currNode.getLeft(), rowIndex + 1, columnIndex * 2, res, treeDepth);
         }
 
-        // 对右儿子进行判断，若有右儿子，则记录相应的"\"与右儿子的值
         if (currNode.getRight() != null) {
             writeArray(currNode.getRight(), rowIndex + 1, columnIndex * 2 + 1, res, treeDepth);
         }

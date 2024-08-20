@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import VHDSSE.*;
 import dprfMM.*;
 import dpMM.*;
+import chFB.*;
 
 
 public class SerialData {
@@ -153,6 +154,33 @@ public class SerialData {
             FileInputStream fileIn = new FileInputStream("DB/VHDSSE/" + fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
             return (VHDSSE) in.readObject();
+        } catch (EOFException e) {
+            System.out.println("End of file");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static void Serial_DB_Out(chFB chfb, String fileName) {
+        try {
+            FileOutputStream fos = new FileOutputStream("DB/chFB/" + fileName);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+            oos.writeObject(chfb);
+
+            oos.close();
+            System.out.println("VHDSSE generated and saved to " + fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to write key-value pairs to " + fileName);
+        }
+    }
+    public static chFB Serial_chFB_In(String fileName) {
+        try {
+            FileInputStream fileIn = new FileInputStream("DB/chFB/" + fileName);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            return (chFB) in.readObject();
         } catch (EOFException e) {
             System.out.println("End of file");
         } catch (IOException | ClassNotFoundException e) {

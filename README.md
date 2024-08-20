@@ -255,12 +255,15 @@ for (int i = 0; i < cuckoo.Get_Table_Size()*2; i++) {
   - `(dprfMM dprf,String fileName)` // 用于 dprfMM
   - `(dpMM dp,String fileName)` // 用于 dpMM
   - `(VHDSSE vhdsse, String fileName)` // 用于 VHDSSE
+  - `(chFB chfb,String fileName)` // 用于 chFB
 - `Serial_dprfMM_In(String fileName)`
   - 从文件中序列化读取 dprfMM 数据集
 - `Serial_dpMM_In(String fileName)`
   - 从文件中序列化读取 dpMM 数据集
 - `Serial_VHDSSE_In(String fileName)`
   - 从文件中序列化读取 VHDSSE 数据集
+- `Serial_chFB_In(String fileName)`
+  - 从文件中序列化读取 chFB 数据集
 
 #### 使用示例
 
@@ -494,7 +497,93 @@ for (String s : result) {
 }
 ```
 
-## 五. 共享树型方案（NewDVH）
+## 五. 2chFB
+
+### 1. TreeNode
+
+#### 使用说明
+
+- `TreeNode()`：默认构造函数
+- `TreeNode(T data)`：构建数据类型为 T 的节点
+- `T getData()`：返回节点数据
+- `setData(T data)`：设置节点数据
+- `TreeNode<T> getLeft()`：返回左孩子节点
+- `setLeft(TreeNode<T> left)`：设置左孩子节点
+- `TreeNode<T> getRight()`：返回右孩子节点
+- `setRight(TreeNode<T> right)`：设置右孩子节点
+- `toString()`: 重写 toString 方法（T类型的数据也要有对应的 toString）
+
+### 2. TreeOperation
+
+#### 使用说明
+
+- `static TreeNode createFullBinaryTree(int depth)`：创建一颗高度为depth 空的 满二叉树
+- `static int getTreeDepth(TreeNode<KV> root)`: 获取树的深度（根节点的深度为 0）
+- `static void show(TreeNode<KV> root)`：打印树的结构（尤其适用于KV类型，其它类型还没测试）
+  - `static void writeArray(TreeNode currNode, int rowIndex, int columnIndex, String[][] res, int treeDepth)` : 配合show函数使用
+
+### 3. TwoChoiceHash
+
+#### 使用说明
+
+- `B` : 存储加密数据库
+- `TwoChoiceHash(KV[] kv_list, int s, int h)` : 构造函数，建立二选哈希
+  - `kv_list` : 需要填入的数据集
+  - `s` : 二叉树数量
+  - `h` : 二叉树高度
+- `Setup(KV[] kv_list,TreeNode<KV>[] forest)` : 建立函数
+  - `forest` : 存储明文
+  - `InsertAll(KV[] kv_list,TreeNode<KV>[] forest)` : 插入函数,插入所有数据，由Setup调用
+    - `Insert(KV kv, TreeNode<KV> node,int depth,int loc)` : 将KV 沿着路径 loc 插入到 node 深为 depth 的节点
+- `int G(KV kv, int index)` : $G_{\kappa}(j || 0/1)$
+  - `index` : 0 或 1
+  - `static int Map2Range(byte[] hash,int capacity)` : 将 hash 值映射到 [0,capacity) 的范围，由 G 调用
+- `int CheckDeepest(int index, TreeNode root)` : 计算树的非空最深处
+- `Encry_B(TreeNode<KV> root_p,TreeNode<byte[]> root_c)` : 将明文树（root_p）加密为密文树 （root_c）
+- `Query(int tree_index, int loc, ArrayList<byte[]> result)` : 查询函数
+  - `tree_index` : 二叉树编号
+  - `loc` : bin的相对位置
+  - `result` : 查询结果
+- `WriteBack(String key,ArrayList<String> v,ArrayList<KV> unwanted,Set<Integer> bin)` : 写回函数
+  - `key` : 查询关键字
+  - `v` : 查询结果
+  - `unwanted` :未用到的的数据
+  - `bin` : 查询结果的位置
+  - `TreeNode<byte[]> getTreeNode(int G_0, int dep_0)` : 获取密文树的节点,由 WriteBack 调用
+
+### 4. chFB
+
+#### 使用说明
+
+- `chFB(int numPairs, int maxVolume, String filename)` : 构造函数，建立 chFB 方案
+  - 第二种构造方式：`chFB(String filename)` : 从文件名中获取参数（非通用）
+- `Update(String key,ArrayList<String> v,String op)` : 更新函数
+  - `key` : 更新关键字
+  - `v` : 更新向量
+  - `op` : 操作类型
+- `ArrayList<String> Query(String key)` : 查询函数
+  - `key` : 查询关键字
+- `Query_Update()` ：全自动测试函数
+  - 用吧，一用一个不吱声
+
+#### 使用示例
+  
+```java
+// test chFB
+// 生成方案并序列化写入文件
+System.out.println("----------------------------------------------test chFB-------------------------------------------");
+String filename = "Shuffle/DB_zipf/Zipf_9_109.ser";
+chFB chfb = new chFB(filename);
+SerialData.Serial_DB_Out(chfb,filename.split("/")[2]);
+
+// 序列化读出并运行
+chFB chfb = SerialData.Serial_chFB_In("Zipf_9_109.ser");
+assert chfb != null;
+chfb.Query_Update();
+```
+
+
+## 六. 共享树型方案（NewDVH）
 
 ### 1. 对象类
 
