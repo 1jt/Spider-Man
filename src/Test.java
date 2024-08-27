@@ -25,7 +25,7 @@ public class Test {
              ) {
             if (!element.equals("DB/database_shuffle_10_5.txt"))
                 continue;
-            Setup_DVH.Test(element);
+//            Setup_DVH.Test(element);
 //            Setup_chFB.Test(element);
 //            Setup_VHDSSE.Test(element);
 //            Setup_NewDVH.Test(element);

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -11,6 +12,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 public class NewDVH_Tool {
+
+    public static String EncryKey = "Key1000";//临时加解密秘钥
     //计算size大小
     public static int Size(String filePath) throws IOException {
         int size;
@@ -42,14 +45,13 @@ public class NewDVH_Tool {
     }
 
     public static byte[] Encrypt(String key,String value) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        byte[] enkey = Hash.Get_SHA_256(key.getBytes());
-        byte[] envalue = value.getBytes();
-        byte[] encrypted = AESUtil.encrypt(enkey, envalue);
+        byte[] enkey = Hash.Get_SHA_256(key.getBytes(StandardCharsets.UTF_8));
+        byte[] encrypted = AESUtil.encrypt(enkey, value.getBytes(StandardCharsets.UTF_8));
         return encrypted;
     }
 
     public static String Decrypt(String key,byte[] envalue) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        byte[] enkey = Hash.Get_SHA_256(key.getBytes());
+        byte[] enkey = Hash.Get_SHA_256(key.getBytes(StandardCharsets.UTF_8));
         byte[] decrypted = AESUtil.decrypt(enkey, envalue);
         String s = new String(decrypted);
         return s;
@@ -94,7 +96,7 @@ public class NewDVH_Tool {
         int num = 0;//记录更新序列大小
         int num_1 = 0;//记录1的数量
         int num_0 = 0;//记录0的数量
-        String val = key + "+Value" + value;
+        String val = key + "=Value" + value;
         //遍历查找返回结果，直到查找到目标数据为止
         for (String s : query_result) {
             num += 1;
@@ -131,7 +133,7 @@ public class NewDVH_Tool {
         int num = 0;//记录更新序列大小
         int num_1 = 0;//记录1的数量
         int num_0 = 0;//记录0的数量
-        String dummy = key+ "+ValueDummy";
+        String dummy ="Dummy";
         boolean next_pos = true;
         //遍历查找返回结果，判断是否有dummy，碰到dummy就停止
         for (String s : query_result) {

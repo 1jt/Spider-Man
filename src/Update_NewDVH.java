@@ -3,6 +3,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.io.*;
+
 import Tools.*;
 
 import javax.crypto.BadPaddingException;
@@ -11,11 +12,12 @@ import javax.crypto.NoSuchPaddingException;
 
 public class Update_NewDVH {
 
-    public static void DeleteUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException {
+    public static void DeleteUpdate(int size, String key, ArrayList<String> query_result, ArrayList<NodeSet> database) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 
         //从键盘读取要删除的值
         BufferedReader index = new BufferedReader(new InputStreamReader(System.in));
         String dummy = "Dummy";
+        byte[] enDummy = NewDVH_Tool.Encrypt(NewDVH_Tool.EncryKey, dummy);
         System.out.println("输入要删除的value值");
         String value = index.readLine();
 
@@ -35,7 +37,7 @@ public class Update_NewDVH {
         //在节点库中找到目标节点后，执行删除
         for (NodeSet node : database) {
             if (node.getNode().getId().getX() == x && node.getNode().getId().getY() == y) {
-                node.getNode().setData(dummy);
+                node.getNode().setData(enDummy);
             }
         }
 
@@ -50,12 +52,8 @@ public class Update_NewDVH {
         BufferedReader index = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("输入要添加的value值");
         String value = index.readLine();
-        String data = "Value" + value;//因为更新之前对目标进行过查询，知道key
-        byte[] enkey = Hash.Get_SHA_256(key.getBytes());
-        byte[] envalue = value.getBytes();
-        byte[] endata = AESUtil.encrypt(enkey, envalue);
-        String st_endata = new String(endata,"ISO-8859-1");
-
+        String data =  key + "=Value" + value;//因为更新之前对目标进行过查询，知道key
+        byte[] endata = NewDVH_Tool.Encrypt(NewDVH_Tool.EncryKey, data);//加密
 
 
 //        long startTime = System.nanoTime(); // 记录开始时间
@@ -79,7 +77,7 @@ public class Update_NewDVH {
             //遍历数据库找到父亲节点
             for (NodeSet node : database) {
                 if (node.getNode().getId().getX() == x && node.getNode().getId().getY() == y) {
-                    TreeNode<String> new_node = new TreeNode<>(st_endata);
+                    TreeNode<byte[]> new_node = new TreeNode<>(endata);
 
                     //更新序列最后一位表示目标几点和其父亲节点的关系
                     if (update_list.get(update_list.size() - 1) == 0) {
@@ -111,7 +109,7 @@ public class Update_NewDVH {
             //找到对应节点，覆盖数据
             for (NodeSet node : database) {
                 if (node.getNode().getId().getX() == x && node.getNode().getId().getY() == y) {
-                    node.getNode().setData(st_endata);
+                    node.getNode().setData(endata);
                 }
             }
         }
