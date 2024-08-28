@@ -11,15 +11,13 @@ import Tools.*;
 
 public class NewDVH_Test {
     public static void main(String[] args) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        String element = "DB_zipf_shuffle/Zipf_11.txt";
+        String element = "DB_zipf_shuffle/Zipf_15.txt";
         int size = NewDVH_Tool.Size(element);
         Setup_NewDVH.Test(element);
 
         ArrayList<NodeSet> database = new ArrayList<NodeSet>(Setup_NewDVH.Position);
 
-
-
-//        NewDVH_Tool.Serial_NewDVH_Out(database,"Zipf_11.ser");
+        NewDVH_Tool.Serial_NewDVH_Out(database,"Zipf_15.ser");
 
 //        long startTime = System.nanoTime(); // 记录开始时间
 //        // 需要测试运行时间的代码段区间
@@ -33,7 +31,7 @@ public class NewDVH_Test {
 //        System.out.println("代码段的运行时间为: " + executionTime + " 毫秒");
 
 
-        UpdateTest_NewDVH.NewDVH_TestUpdate(Setup_NewDVH.Position,size); //测试更新功能实现
+//        UpdateTest_NewDVH.NewDVH_TestUpdate(Setup_NewDVH.Position,size); //测试更新功能实现
 
     }
 }
