@@ -8,8 +8,8 @@ import Tools.SerialData;
 public class KeyValueGenerator {
     public static void main(String[] args) {
 //        char model = 'r'; // 'r' for random, 'z' for zipf
-        char model = 'z';
-        int numPairs = (int) Math.pow(2,9); // 键值对的总数
+        char model = 'r';
+        int numPairs = (int) Math.pow(2,20); // 键值对的总数
         int numKeys = numPairs/8; // 键的数量
         int maxVolume = (int) Math.pow(2,4); // 值的最大数量
 

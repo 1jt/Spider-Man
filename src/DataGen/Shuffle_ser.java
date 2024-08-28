@@ -13,7 +13,7 @@ import Tools.SerialData;
 
 public class Shuffle_ser {
     public static void main(String[] args) {
-        String fileName = "DB_zipf/Zipf_9_109.ser";
+        String fileName = "DB_random/Random_10_4.ser";
         String[] temp = fileName.split("_|\\.|/");
         // shuffle ser file
         if (temp[temp.length-1].equals("ser")) {
