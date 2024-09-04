@@ -8,12 +8,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Objects;
 import Tools.*;
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 
 public class NewDVH_Test {
     public static void main(String[] args) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         String element = "DB_zipf_shuffle/Zipf_15.txt";
         String elementSer = "DB_random/Random_9_4.ser";
         String elemenTxt = "DB/database_shuffle_16_6.txt";
+        int datasize = 0;
         int size = NewDVH_Tool.Size(elemenTxt);
 
 
@@ -25,7 +27,12 @@ public class NewDVH_Test {
 
         ArrayList<NodeSet> database = new ArrayList<NodeSet>(Setup_NewDVH.Position);
 
-        NewDVH_Tool.Serial_NewDVH_Out(database,"Random_16_6.ser");
+        for (int i = 0; i < database.size(); i++) {
+
+            datasize = (int) (datasize + ObjectSizeCalculator.getObjectSize(database.get(i)));
+        }
+
+        System.out.println(datasize);
 
 
         //测试运行时间代码段区间
