@@ -1,4 +1,6 @@
-public class MMPoint {
+import java.io.Serializable;
+
+public class MMPoint implements Serializable {
     private int x;
     private int y;
 

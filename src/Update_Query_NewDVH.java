@@ -1,4 +1,10 @@
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.math.BigInteger;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 public class Update_Query_NewDVH {
@@ -6,15 +12,16 @@ public class Update_Query_NewDVH {
 
     public static ArrayList<Integer> list = new ArrayList<>();//存储查询返回pos序列
 
-    public static ArrayList<String> Run(String key, int size, ArrayList<NodeSet> Position) {
-        ArrayList<String> Result = new ArrayList<>();//Result中记录查询到的数据
+    public static ArrayList<String> Run(String key, int size, ArrayList<NodeSet> Position) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        ArrayList<byte[]> Result = new ArrayList<>();//Result中记录查询到的数据，形式为加密形式
+        ArrayList<String> resultString = new ArrayList<>();//记录解密后的数据
         String kappa = HashKit.sha1(key + 0 + 1);
         BigInteger tmp_3 = new BigInteger(kappa, 16);
         int root = tmp_3.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
         list.clear();//由于是全局变量，每次使用前清理一下防止bug
         list.add(root);//序列第一个是根结点编号
 
-        TreeNode<String> node_tmp = null;//记录当前节点
+        TreeNode<byte[]> node_tmp = null;//记录当前节点
         for (int j = 0; j < Position.size(); j++) {//遍历数据库，找到对应编号为root的根节点
             node_tmp = Position.get(j).getNode();
             if (node_tmp.getId().getX() == root && node_tmp.getId().getY() == size - 1 - root) {
@@ -54,7 +61,12 @@ public class Update_Query_NewDVH {
             }
 
         }
-        return Result;
+        String dekey = NewDVH_Tool.EncryKey;
+        for (int i = 0; i < Result.size(); i++) {
+            String de = NewDVH_Tool.Decrypt(dekey,Result.get(i));
+            resultString.add(de);
+        }
+        return resultString;
 
     }
 

@@ -10,32 +10,30 @@ import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.ArrayList;
+import java.util.*;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
 public class Setup_NewDVH {
-    //    public static ArrayList<TreeNode> Rroots = new ArrayList<>();//测试用，装有所有根节点
     public static ArrayList<NodeSet> Position = new ArrayList<>();//存储所有NodeSet
 
-
-    public static ArrayList<TreeNode> Test(String filePath) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public static void Test(String filePath) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 
 
 //        System.out.println("----------" + filePath + " starts Setup calculation----------");
 
         int size = NewDVH_Tool.Size(filePath);
-        TreeNode<String>[] roots = Roots.CreateRoots(size);//建立size个根节点
+        TreeNode<byte[]>[] roots = Roots.CreateRoots(size);//建立size个根节点
         ArrayList<TreeNode> nodeList = new ArrayList<>();
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String line;
         String key = null; // 每次读取的关键词
         String value = null; // 每次读取关键词对应的值
         String kappa; // 每个关键词生成的密钥
+        String dekey = NewDVH_Tool.EncryKey;//临时加密秘钥
         int root; // 关键词对应的根节点的编号
+        Set<MMPoint> hashset= new HashSet<MMPoint>();//创建哈希集合
+
 
         while ((line = reader.readLine()) != null) {
             // 读取键值对
@@ -47,6 +45,8 @@ public class Setup_NewDVH {
                 System.out.println("Invalid key-value pair: " + line);
             }
 
+            String addValue = key + "=" + value;//存入数据仍然为Key**=Value**型
+
             // 计算kappa
             kappa = HashKit.sha1(key + 0 + 1);//这里kappa只用1这一个路径
 
@@ -55,26 +55,26 @@ public class Setup_NewDVH {
             root = tmp.divideAndRemainder(BigInteger.valueOf(size))[1].intValue();
 
             //加密模块
-            byte[] envalue = NewDVH_Tool.Encrypt(key, value);
+            byte[] envalue = NewDVH_Tool.Encrypt(dekey, addValue);
 
             // 如果对应根节点没有数据，则执行初始化操作
             if (roots[root].getData() == null) {
-                roots[root].setData(key + "+" + value);
+                roots[root].setData(envalue);
                 //计算根节点在坐标轴的位置
                 MMPoint NodePosition = new MMPoint(root, size - 1 - root);
                 roots[root].setId(NodePosition);
                 //位置和节点一起存入Nodeset中
                 NodeSet node_temp = new NodeSet(NodePosition, roots[root]);
                 Position.add(node_temp);
+                hashset.add(NodePosition);//将根节点坐标放入哈希集合里
                 nodeList.add(roots[root]);
                 continue;//开启下一次循环，读取下一个数据
             }
 
             // 根节点已经存在数据
-            TreeNode<String> node_tmp = roots[root];//node_temp表示当前节点
+            TreeNode<byte[]> node_tmp = roots[root];//node_temp表示当前节点
             int count = 0; // 关键词所在层数
             boolean flag = false; // 放入成功指示符
-            String input = key + "+" + value;
 
             STOP:
             while (!flag) {
@@ -91,22 +91,28 @@ public class Setup_NewDVH {
                     //判断左孩子位置有人不，有人则把该节点变为你的左孩子
                     //这里可以优化，使用哈希表判断是否xy是否存在，能更快
                     if (node_tmp.getLeft() == null) {
-                        for (int pos_num = 0; pos_num < Position.size(); pos_num++) {
-                            int aid_x = Position.get(pos_num).getPosition().getX();
-                            int aid_y = Position.get(pos_num).getPosition().getY();
-                            if (aid_x == child_x && aid_y == child_y) {
-                                node_tmp.setLeft(Position.get(pos_num).getNode());
-                                node_tmp = node_tmp.getLeft();
-                                //遍历Position，xy坐标匹配成功表示该位置存在节点，但没有与node_temp建立父子关系
-                                continue STOP;//跳出大循环，计算下一层位置
+                        if (hashset.contains(NodePosition)){
+                            for (int pos_num = 0; pos_num < Position.size(); pos_num++) {
+                                int aid_x = Position.get(pos_num).getPosition().getX();
+                                int aid_y = Position.get(pos_num).getPosition().getY();
+                                if (aid_x == child_x && aid_y == child_y) {
+                                    node_tmp.setLeft(Position.get(pos_num).getNode());//建立父子关系
+                                    node_tmp = node_tmp.getLeft();//当前节点迭代
+                                    //遍历Position，xy坐标匹配成功表示该位置存在节点，但没有与node_temp建立父子关系
+                                    continue STOP;//跳出大循环，计算下一层位置
+                                }
                             }
+
                         }
+
+
                         //位置没人，建立一个节点，并存入Position中
-                        TreeNode<String> node_left = new TreeNode<String>(input);
+                        TreeNode<byte[]> node_left = new TreeNode<byte[]>(envalue);
                         node_tmp.setLeft(node_left);
                         node_tmp.setLeftId(NodePosition);
                         NodeSet node_cash = new NodeSet(NodePosition, node_left);
                         Position.add(node_cash);//插入成功，读取下一个数据
+                        hashset.add(NodePosition);
                         nodeList.add(node_left);
                         break;
                     } else {
@@ -122,20 +128,24 @@ public class Setup_NewDVH {
 
                     //左孩子为空，判断左孩子位置有人不，有人则把该节点变为你的左孩子，对象更迭，没人就初始化一个占据该位置
                     if (node_tmp.getRight() == null) {
-                        for (int pos_num = 0; pos_num < Position.size(); pos_num++) {
-                            int aid_x = Position.get(pos_num).getPosition().getX();
-                            int aid_y = Position.get(pos_num).getPosition().getY();
-                            if (aid_x == child_x && aid_y == child_y) {
-                                node_tmp.setRight(Position.get(pos_num).getNode());
-                                node_tmp = node_tmp.getRight();
-                                continue STOP;
+                        if (hashset.contains(NodePosition)){
+                            for (int pos_num = 0; pos_num < Position.size(); pos_num++) {
+                                int aid_x = Position.get(pos_num).getPosition().getX();
+                                int aid_y = Position.get(pos_num).getPosition().getY();
+                                if (aid_x == child_x && aid_y == child_y) {
+                                    node_tmp.setRight(Position.get(pos_num).getNode());
+                                    node_tmp = node_tmp.getRight();
+                                    continue STOP;
+                                }
                             }
                         }
-                        TreeNode<String> node_right = new TreeNode<String>(input);
+
+                        TreeNode<byte[]> node_right = new TreeNode<byte[]>(envalue);
                         node_tmp.setRight(node_right);
                         node_tmp.setRightId(NodePosition);
                         NodeSet node_cash = new NodeSet(NodePosition, node_right);
                         Position.add(node_cash);
+                        hashset.add(NodePosition);
                         nodeList.add(node_right);
                         break;
                     } else {
@@ -144,6 +154,6 @@ public class Setup_NewDVH {
                 }
             }
         }
-        return nodeList;
+
     }
 }

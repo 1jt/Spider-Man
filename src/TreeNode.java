@@ -1,4 +1,6 @@
-public class TreeNode<T> {
+import java.io.Serializable;
+
+public class TreeNode<T> implements Serializable {
     private T data;
     private TreeNode<T> left;
     private TreeNode<T> right;
