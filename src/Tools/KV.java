@@ -3,7 +3,9 @@ package Tools;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class KV implements Serializable {
+public  class KV implements Serializable {
+
+    private static final long serialVersionUID = 1401358247399335467L;
     public String key;
     public String value;
     public String op;
