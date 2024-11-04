@@ -17,19 +17,13 @@ public class NewDVH_Tool {
     //计算size大小
     public static int Size(String filePath) throws IOException {
         int size;
-        int n = Tools.CalculateNumberOfDBEntries(filePath);
+        KV[] kvs = Serial_Raw_In(filePath);
+        int n = kvs.length;
         double c = 0.125;
         size = (int) (c * n / 8);
         return size;
     }
 
-    //暂时忘了干啥用的了
-    public static int M(String filePath) throws IOException {
-        Map<String, Integer> DB = Tools.CalculateRealVolume(filePath);
-        Random random = new Random();
-        int index = random.nextInt(DB.keySet().size());
-        return index;
-    }
 
     public static TreeNode FindNode(int x,int y,ArrayList<NodeSet>Position){
 
@@ -75,11 +69,11 @@ public class NewDVH_Tool {
 
 
     //序列化读取
-    public static NodeSet Serial_NewDVH_In(String fileName) {
+    public static KV[] Serial_Raw_In(String fileName) {
         try {
-            FileInputStream fileIn = new FileInputStream("DB/NewDVH/" + fileName);
+            FileInputStream fileIn = new FileInputStream(fileName);
             ObjectInputStream in = new ObjectInputStream(fileIn);
-            return (NodeSet) in.readObject();
+            return (KV[]) in.readObject();
         } catch (EOFException e) {
             System.out.println("End of file");
         } catch (IOException | ClassNotFoundException e) {

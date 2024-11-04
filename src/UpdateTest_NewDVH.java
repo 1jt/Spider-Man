@@ -24,18 +24,24 @@ public class UpdateTest_NewDVH {
         int Query_cycle_time = 100;//查询关键字个数
         int avage_num = 0;
         int max_num = 0;
+        long runtime= 0;
 
         for (int Query_num_times = 0; Query_num_times < Query_num; Query_num_times++) {
             int result_num = 0;
             int judge_num = 0;
-
             for (int times = 0; times < Query_cycle_time; times++) {
                 Random rd = new Random();
-                int index = rd.nextInt(120); //更新赋值
+                int index = rd.nextInt(Position.size()/8); //齐夫数据集 m = n /8
 //                int index = 1;
                 String query_key = "Key" + index;
 
+                long startTime = System.nanoTime(); // 记录开始时间
+                // 需要测试运行时间的代码段区间
                 Result = Update_Query_NewDVH.Run(query_key, size, Position);
+                //测试运行时间代码段区间
+                long endTime = System.nanoTime(); // 记录结束时间
+                long executionTime = (endTime - startTime); // 计算代码段的运行时间（纳秒）
+                runtime += executionTime;
                 result_num += Result.size();
                 //输出查到的值，判断是否无损
                 double num = 0;
@@ -53,11 +59,11 @@ public class UpdateTest_NewDVH {
                 }
 
             }
+
             max_num = Math.max(max_num, judge_num);
-            System.out.println("平均volume = " + result_num / Query_cycle_time + " 暴露真实数量的查询有" + judge_num);
             avage_num += result_num / Query_cycle_time;
         }
-        System.out.println("平均volume = " + avage_num / Query_num + "，最大暴露真实数量查询个数为" + max_num);
+        System.out.println("平均volume = " + avage_num / Query_num + "，最大暴露真实数量查询个数占百分比" + max_num + "，平均查询一次所用时间（纳秒）" + runtime/10000);
 
     }
 
