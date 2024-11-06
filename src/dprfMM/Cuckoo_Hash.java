@@ -189,7 +189,7 @@ public class Cuckoo_Hash implements Serializable {
             }
             ++count;
         }
-        System.out.println("add an element into the CT's stash");
+//        System.out.println("add an element into the CT's stash");
         stash.add(kl_list[index].toKV());
     }
 }

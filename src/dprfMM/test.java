@@ -5,21 +5,23 @@ import Tools.*;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Random;
 
+import com.sun.org.apache.xpath.internal.NodeSet;
 import dpMM.*;
 import VHDSSE.*;
 import chFB.*;
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 
 
 public class test {
@@ -181,6 +183,7 @@ public class test {
 //        int[] params = tool.Get_Total_Max_Num(filename);
 //        VHDSSE vhdsse = new VHDSSE(params[0],params[1],filename);
 //        SerialData.Serial_DB_Out(vhdsse,filename.split("/")[2]);
+        /*
         VHDSSE vh = SerialData.Serial_VHDSSE_In("Zipf_9_109.ser");
         assert vh != null;
         ArrayList<String> result = vh.VHDSSE_Query("lyf");
@@ -190,6 +193,8 @@ public class test {
         }
         System.out.println();
         vh.Update();
+
+         */
 //        // TODO 写一下多次查询的
 //        ArrayList<String> result_2 = vh.VHDSSE_Query("lyf");
 //        System.out.println("\nFinal Result: ");
@@ -200,55 +205,93 @@ public class test {
         /// test chFB
         // 生成方案并序列化写入文件
 //        System.out.println("----------------------------------------------test chFB-------------------------------------------");
-//        String filename = "Shuffle/DB_zipf/Zipf_9_109.ser";
+//        String filename = "Shuffle/DB_zipf/Zipf_10_189.ser";
 //        chFB chfb = new chFB(filename);
 //        SerialData.Serial_DB_Out(chfb,filename.split("/")[2]);
 
         // 序列化读出并运行
-        chFB chfb = SerialData.Serial_chFB_In("Zipf_9_109.ser");
-        assert chfb != null;
-        chfb.Query_Update();
+
+//        chFB chfb = SerialData.Serial_chFB_In("Zipf_9_109.ser");
+//        assert chfb != null;
+//        chfb.Query_Update();
+
+
 
 
 //         test show
-        TreeNode<KV> root = new TreeNode<KV>(new KV("key0","value0"));
-        TreeNode<KV> node1 = new TreeNode<KV>(new KV("key1","value1"));
-        TreeNode<KV> node2 = new TreeNode<KV>(new KV("key2","value2"));
-        TreeNode<KV> node3 = new TreeNode<KV>(new KV("key3","value3"));
-        TreeNode<KV> node4 = new TreeNode<KV>(new KV("key4","value4"));
-        TreeNode<KV> node5 = new TreeNode<KV>(new KV("key5","value5"));
-        TreeNode<KV> node6 = new TreeNode<KV>(new KV("key6","value6"));
-        TreeNode<KV> node7 = new TreeNode<KV>(new KV("key7","value7"));
-        TreeNode<KV> node8 = new TreeNode<KV>(new KV("key8","value8"));
-        TreeNode<KV> node9 = new TreeNode<KV>(new KV("key9","value9"));
-        TreeNode<KV> node10 = new TreeNode<KV>(new KV("key10","value10"));
-        TreeNode<KV> node11 = new TreeNode<KV>(new KV("key11","value11"));
-        TreeNode<KV> node12 = new TreeNode<KV>(new KV("key12","value12"));
-        TreeNode<KV> node13 = new TreeNode<KV>(new KV("key13","value13"));
-        TreeNode<KV> node14 = new TreeNode<KV>(new KV("key14","value14"));
-        TreeNode<KV> node15 = new TreeNode<KV>(new KV("key15","value15"));
-
-        root.setLeft(node1);
-        root.setRight(node2);
-        node1.setLeft(node3);
-        node1.setRight(node4);
-        node2.setLeft(node5);
-        node2.setRight(node6);
-        node3.setLeft(node7);
-        node3.setRight(node8);
-        node4.setLeft(node9);
-        node4.setRight(node10);
-        node5.setLeft(node11);
-        node5.setRight(node12);
-        node6.setLeft(node13);
-        node6.setRight(node14);
-        System.out.println();
-        TreeOperation.show(root);
+        String fileStart = "Shuffle/DB_zipf";//对文件夹下所有文件遍历测试
+        ArrayList<String> fileList = GetFileList(fileStart);
+        for (String s : fileList) {
+            System.out.println("************************" + s + "*********************************");
+            String filename = s;
+            System.out.println( "Shuffle/DB_zipf/Zipf_10_189.ser");
 
 
+            //Setup
+            long startTime = System.nanoTime(); // 记录开始时间
+            // 需要测试运行时间的代码段区
+            chFB chfb = new chFB(filename);
+            SerialData.Serial_DB_Out(chfb,filename.split("/")[2]);
+
+            //测试运行时间代码段区间
+            long endTime = System.nanoTime(); // 记录结束时间
+            long executionTime = (endTime - startTime) / 1000000; // 计算代码段的运行时间（毫秒）
+            System.out.println("setup代码段的运行时间为: " + executionTime + " 毫秒");
+            System.out.println("服务器存储开销为" + GetSeverCost(chfb));
+
+            //Query
+            int querySize = 0;
+            long queryTime = 0;
+            int testTimes = 10;
+
+            for (int i = 0; i < testTimes; i++) {
+                Random rd = new Random();
+                int index = rd.nextInt(chfb.DATA_SIZE/8); //齐夫数据集 m = n /8
+                String query_key = "Key" + index;
+                long startTimeQuery = System.nanoTime(); // 记录开始时间
+                // 需要测试运行时间的代码段区间
+                ArrayList<String> query = chfb.Query(query_key);
+                querySize += query.size();
+                //测试运行时间代码段区间
+                long endTimeQuery = System.nanoTime(); // 记录结束时间
+                long executionTimeQuery = (endTimeQuery - startTimeQuery); // 计算代码段的运行时间（纳秒）
+                queryTime += executionTimeQuery;
+            }
+            System.out.println("查询通信开销为"+querySize/testTimes);
+            System.out.println("平均每次查询用时(纳秒)" +queryTime/testTimes );
+
+
+
+            //Update
+        }
 
 
 
 
     }
+
+    public static ArrayList<String> GetFileList(String s){
+        Path startPath = Paths.get(s); // 替换为你的目录路径
+        ArrayList<String> Filelist = new ArrayList<>();
+        try {
+            Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Filelist.add(file.toString().replace('\\', '/')); // 将路径中的\替换为/
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Filelist;
+    }
+    //计算服务器存储开销
+    public static int GetSeverCost(Object data){
+        int datasize = 0;
+        datasize = (int) (ObjectSizeCalculator.getObjectSize(data));
+        return datasize;
+    }
+
+
 }
