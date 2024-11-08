@@ -66,13 +66,13 @@ public class dpMM implements Serializable {
         STORAGE_Data = Data.Get_Table_Size();
     }
 
-    public ArrayList<String> DpQuery(String search_key) throws Exception {
+    public ArrayList<byte[]> DpQuery(String search_key) throws Exception {
 
-        System.out.println("\nClient is generating token ...\nkeywords : >>>   " + (search_key) + "   <<<");
+//        System.out.println("\nClient is generating token ...\nkeywords : >>>   " + (search_key) + "   <<<");
         byte[] tk_key = GenSearchToken(search_key);
 
         // 服务器返回 l(key)
-        System.out.println("\nServer is searching l(key) ... ");
+//        System.out.println("\nServer is searching l(key) ... ");
         ArrayList<byte[]> l_key_server = Query_l_key(tk_key);
 
         // 客户端获取 l(key)
@@ -81,7 +81,7 @@ public class dpMM implements Serializable {
             l_key_client = SearchCTStash(search_key);
         }
         if (l_key_client == -1){
-            System.out.println("l(key) not found!");
+            //System.out.println("l(key) not found!");
             return null;
         }
         // 客户端添加噪声
@@ -95,8 +95,9 @@ public class dpMM implements Serializable {
 
         // 搜索stash
         SearchDataStash(search_key,ClientResult);
+        return ServerResult;
 
-        return ClientResult;
+        //return ClientResult;
     }
 
     // 提供非静态的token生成方法 (静态方法参考dprfMM方案)

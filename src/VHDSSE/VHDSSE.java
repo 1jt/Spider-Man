@@ -85,7 +85,7 @@ public class VHDSSE implements Serializable {
         // 10-16
         for (int i = (int) Math.floor(Math.log(DATA_SIZE) / Math.log(2.0)); i > min - 1 ; i--) {
             if (binary_N.charAt(binary_N.length() - 1 - i) == '0') {
-                System.out.println("there is no database");
+                //System.out.println("there is no database");
                 continue;
             }
 //            System.out.println("---------------------database" + (binary_N.length() - 1 - i) + "---------------------");

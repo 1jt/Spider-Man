@@ -175,6 +175,26 @@ public class chFB implements Serializable {
         return result_client;
     }
 
+    public ArrayList<byte[]> QueryCost(String key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        // search bins
+        byte[] token = Hash.Get_SHA_256((Arrays.toString(twoChoiceHash.Get_K()) + key).getBytes(StandardCharsets.UTF_8));
+        ArrayList<byte[]> result_server = new ArrayList<>();// 服务器搜索结果
+        Set<Integer> bin = new java.util.HashSet<>();
+        for (int i = 0; i < l; i++) {
+            String token_0 = Arrays.toString(token) + i + 0;
+            String token_1 = Arrays.toString(token) + i + 1;
+            byte[] hash_0 = Hash.Get_SHA_256(token_0.getBytes(StandardCharsets.UTF_8));
+            byte[] hash_1 = Hash.Get_SHA_256(token_1.getBytes(StandardCharsets.UTF_8));
+            bin.add(TwoChoiceHash.Map2Range(hash_0, (int) (s * Math.pow(2, h))));
+            bin.add(TwoChoiceHash.Map2Range(hash_1, (int) (s * Math.pow(2, h))));
+        }
+        for (int i : bin) {
+            twoChoiceHash.Query((int) (i / Math.pow(2, h)), (int) (i % Math.pow(2, h)), result_server);
+        }
+        return result_server;
+    }
+
+
     public void Query_Update()throws Exception{
         Scanner scanner = new Scanner(System.in);
         while (true) {

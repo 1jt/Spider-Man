@@ -41,8 +41,11 @@ public class UpdateTest_NewDVH {
                 //测试运行时间代码段区间
                 long endTime = System.nanoTime(); // 记录结束时间
                 long executionTime = (endTime - startTime); // 计算代码段的运行时间（纳秒）
-                runtime += executionTime;
-                result_num += Result.size();
+                if (!Result.isEmpty()){
+                    runtime += executionTime;
+                    result_num += Result.size();
+                }else times -- ;
+
                 //输出查到的值，判断是否无损
                 double num = 0;
                 for (String s : Result) {

@@ -12,10 +12,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 import com.sun.org.apache.xpath.internal.NodeSet;
 import dpMM.*;
@@ -220,49 +217,115 @@ public class test {
 
 //         test show
         String fileStart = "Shuffle/DB_zipf";//对文件夹下所有文件遍历测试
+
         ArrayList<String> fileList = GetFileList(fileStart);
         for (String s : fileList) {
             System.out.println("************************" + s + "*********************************");
             String filename = s;
-            System.out.println( "Shuffle/DB_zipf/Zipf_10_189.ser");
-
 
             //Setup
-            long startTime = System.nanoTime(); // 记录开始时间
-            // 需要测试运行时间的代码段区
+            dprfMM dprf = new dprfMM(filename);
+            dpMM dp = new dpMM(filename);
             chFB chfb = new chFB(filename);
-            SerialData.Serial_DB_Out(chfb,filename.split("/")[2]);
-
-            //测试运行时间代码段区间
-            long endTime = System.nanoTime(); // 记录结束时间
-            long executionTime = (endTime - startTime) / 1000000; // 计算代码段的运行时间（毫秒）
-            System.out.println("setup代码段的运行时间为: " + executionTime + " 毫秒");
-            System.out.println("服务器存储开销为" + GetSeverCost(chfb));
+            VHDSSE vhdsse = new VHDSSE(filename);
+            System.out.println("dprf服务器存储开销为" + GetSeverCost(dprf.cuckoo));
+            System.out.println("dpMM服务器存储开销为" + GetSeverCost(dp.Data));
+            System.out.println("chfb服务器存储开销为" + GetSeverCost(chfb.twoChoiceHash));
+            System.out.println("vhdsse服务器存储开销为" + GetSeverCost(vhdsse.EMM_buf) + GetSeverCost(vhdsse.EMM_stash));
 
             //Query
-            int querySize = 0;
-            long queryTime = 0;
-            int testTimes = 10;
+            int querySizeDprf = 0;
+            long queryTimeDprf = 0;
+
+            int querySizeDp = 0;
+            long queryTimeDp = 0;
+
+            int querySizechfb = 0;
+            long queryTimechfb = 0;
+
+            int querySizevhdsse = 0;
+            long queryTimevhdsse = 0;
+
+            int testTimes = 1000;
 
             for (int i = 0; i < testTimes; i++) {
                 Random rd = new Random();
-                int index = rd.nextInt(chfb.DATA_SIZE/8); //齐夫数据集 m = n /8
+                int index = rd.nextInt(dprf.DATA_SIZE / 8); //齐夫数据集 m = n /8
                 String query_key = "Key" + index;
-                long startTimeQuery = System.nanoTime(); // 记录开始时间
+                //********************************************dprfMM*************************************
+                long startTimeQueryDprf = System.nanoTime(); // 记录开始时间
                 // 需要测试运行时间的代码段区间
-                ArrayList<String> query = chfb.Query(query_key);
-                querySize += query.size();
-                //测试运行时间代码段区间
-                long endTimeQuery = System.nanoTime(); // 记录结束时间
-                long executionTimeQuery = (endTimeQuery - startTimeQuery); // 计算代码段的运行时间（纳秒）
-                queryTime += executionTimeQuery;
+                ArrayList<byte[]> dprfResult = dprf.DprfQueryCost(query_key);
+                long endTimeQueryDprf = System.nanoTime(); // 记录结束时间
+                long executionTimeQueryDprf = (endTimeQueryDprf - startTimeQueryDprf); // 计算代码段的运行时间（纳秒）
+                if (dprfResult!=null){
+                    querySizeDprf += dprfResult.size();
+                    queryTimeDprf += executionTimeQueryDprf;
+                }else i--;
+
             }
-            System.out.println("查询通信开销为"+querySize/testTimes);
-            System.out.println("平均每次查询用时(纳秒)" +queryTime/testTimes );
+            for (int i = 0; i < testTimes; i++) {
+                Random rd = new Random();
+                int index = rd.nextInt(dp.DATA_SIZE / 8); //齐夫数据集 m = n /8
+                String query_key = "Key" + index;
+
+                //********************************************dpMM*************************************
+                long startTimeQueryDp = System.nanoTime(); // 记录开始时间
+                // 需要测试运行时间的代码段区间
+                ArrayList<byte[]> dpResult = dp.DpQuery(query_key);
+                long endTimeQueryDp = System.nanoTime(); // 记录结束时间
+                long executionTimeQueryDp = (endTimeQueryDp - startTimeQueryDp); // 计算代码段的运行时间（纳秒）
+                if (dpResult!=null){
+                    querySizeDp += dpResult.size();
+                    queryTimeDp += executionTimeQueryDp;
+                }else i--;
+
+            }
+            for (int i = 0; i < testTimes; i++) {
+                Random rd = new Random();
+                int index = rd.nextInt(chfb.DATA_SIZE / 8); //齐夫数据集 m = n /8
+                String query_key = "Key" + index;
+
+                //********************************************chfb*************************************
+                long startTimeQuerychfb = System.nanoTime(); // 记录开始时间
+                // 需要测试运行时间的代码段区间
+                ArrayList<byte[]> chfbResult = chfb.QueryCost(query_key);
+                ArrayList<String> chfbResult2 = chfb.Query(query_key);
+                long endTimeQuerychfb = System.nanoTime(); // 记录结束时间
+                long executionTimeQuerychfb = (endTimeQuerychfb - startTimeQuerychfb); // 计算代码段的运行时间（纳秒）
+                if (chfbResult2!=null){
+                    querySizechfb += chfbResult2.size();
+                    queryTimechfb += executionTimeQuerychfb;
+                }else i--;
+
+            }
+            for (int i = 0; i < testTimes; i++) {
+                Random rd = new Random();
+                int index = rd.nextInt(vhdsse.DATA_SIZE/ 8); //齐夫数据集 m = n /8
+                String query_key = "Key" + index;
+                //********************************************vhdsse*************************************
+                long startTimeQueryvhdsse = System.nanoTime(); // 记录开始时间
+                // 需要测试运行时间的代码段区间
+
+                ArrayList<byte[]> vhdsseResult = vhdsse.VHDSSE_Query_Server(query_key);
+                long endTimeQueryvhdsse = System.nanoTime(); // 记录结束时间
+                long executionTimeQueryvhdsse = (endTimeQueryvhdsse - startTimeQueryvhdsse); // 计算代码段的运行时间（纳秒）
+                if (vhdsseResult!=null){
+                    querySizevhdsse += vhdsseResult.size();
+                    queryTimevhdsse += executionTimeQueryvhdsse;
+                }else i--;
 
 
+            }
+            System.out.println("dprfMM查询通信开销为"+querySizeDprf/testTimes);
+            System.out.println("dprfMM平均每次查询用时(纳秒)" +queryTimeDprf/testTimes );
+            System.out.println("dpMM查询通信开销为"+querySizeDp/testTimes);
+            System.out.println("dpMM平均每次查询用时(纳秒)" +queryTimeDp/testTimes );
+            System.out.println("chfb查询通信开销为"+querySizechfb/testTimes);
+            System.out.println("chfb平均每次查询用时(纳秒)" +queryTimechfb/testTimes );
+            System.out.println("vhdsse查询通信开销为"+querySizevhdsse/testTimes);
+            System.out.println("vhdsse平均每次查询用时(纳秒)" +queryTimevhdsse/testTimes );
 
-            //Update
         }
 
 

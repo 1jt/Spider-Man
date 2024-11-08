@@ -24,17 +24,14 @@ public class Setup_NewDVH {
 //        System.out.println("----------" + filePath + " starts Setup calculation----------");
 
         int size = NewDVH_Tool.Size(filePath);
-        KV[] kvs = NewDVH_Tool.Serial_Raw_In(filePath);
+        KV[] kvs = NewDVH_Tool.Serial_Raw_In(filePath);//kv形式读取数据
         TreeNode<byte[]>[] roots = Roots.CreateRoots(size);//建立size个根节点
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
         String key = null; // 每次读取的关键词
         String value = null; // 每次读取关键词对应的值
         String kappa; // 每个关键词生成的密钥
         String dekey = NewDVH_Tool.EncryKey;//临时加密秘钥
         int root; // 关键词对应的根节点的编号
-        //Set<MMPoint> hashset= new HashSet<MMPoint>();//创建哈希集合
         Map<MMPoint,TreeNode<byte[]>> hashMap = new HashMap<>();//使用map能否更快
-
         for (int i = 0; i < kvs.length; i++) {
             key = kvs[i].key;
             value = kvs[i].value;
@@ -58,7 +55,6 @@ public class Setup_NewDVH {
                 //位置和节点一起存入Nodeset中
                 NodeSet node_temp = new NodeSet(NodePosition, roots[root]);
                 Position.add(node_temp);
-                //hashset.add(NodePosition);//将根节点坐标放入哈希集合里
                 hashMap.put(NodePosition,roots[root]);//hashmap记录坐标与节点对应关系
                 continue;//开启下一次循环，读取下一个数据
             }
@@ -93,7 +89,6 @@ public class Setup_NewDVH {
                         node_tmp.setLeftId(NodePosition);
                         NodeSet node_cash = new NodeSet(NodePosition, node_left);
                         Position.add(node_cash);//插入成功，读取下一个数据
-                        //hashset.add(NodePosition);
                         hashMap.put(NodePosition,node_left);
                         break;
                     } else {
