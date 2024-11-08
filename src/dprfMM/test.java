@@ -232,6 +232,7 @@ public class test {
             System.out.println("dpMM服务器存储开销为" + GetSeverCost(dp.Data));
             System.out.println("chfb服务器存储开销为" + GetSeverCost(chfb.twoChoiceHash));
             System.out.println("vhdsse服务器存储开销为" + GetSeverCost(vhdsse.EMM_buf) + GetSeverCost(vhdsse.EMM_stash));
+            System.out.println("___________________________________________________________________________________________");
 
             //Query
             int querySizeDprf = 0;
@@ -257,7 +258,7 @@ public class test {
                 // 需要测试运行时间的代码段区间
                 ArrayList<byte[]> dprfResult = dprf.DprfQueryCost(query_key);
                 long endTimeQueryDprf = System.nanoTime(); // 记录结束时间
-                long executionTimeQueryDprf = (endTimeQueryDprf - startTimeQueryDprf); // 计算代码段的运行时间（纳秒）
+                long executionTimeQueryDprf = (endTimeQueryDprf - startTimeQueryDprf)/1000; // 计算代码段的运行时间（纳秒）
                 if (dprfResult!=null){
                     querySizeDprf += dprfResult.size();
                     queryTimeDprf += executionTimeQueryDprf;
@@ -274,7 +275,7 @@ public class test {
                 // 需要测试运行时间的代码段区间
                 ArrayList<byte[]> dpResult = dp.DpQuery(query_key);
                 long endTimeQueryDp = System.nanoTime(); // 记录结束时间
-                long executionTimeQueryDp = (endTimeQueryDp - startTimeQueryDp); // 计算代码段的运行时间（纳秒）
+                long executionTimeQueryDp = (endTimeQueryDp - startTimeQueryDp)/1000; // 计算代码段的运行时间（纳秒）
                 if (dpResult!=null){
                     querySizeDp += dpResult.size();
                     queryTimeDp += executionTimeQueryDp;
@@ -292,7 +293,7 @@ public class test {
                 ArrayList<byte[]> chfbResult = chfb.QueryCost(query_key);
                 ArrayList<String> chfbResult2 = chfb.Query(query_key);
                 long endTimeQuerychfb = System.nanoTime(); // 记录结束时间
-                long executionTimeQuerychfb = (endTimeQuerychfb - startTimeQuerychfb); // 计算代码段的运行时间（纳秒）
+                long executionTimeQuerychfb = (endTimeQuerychfb - startTimeQuerychfb)/1000; // 计算代码段的运行时间（纳秒）
                 if (chfbResult2!=null){
                     querySizechfb += chfbResult2.size();
                     queryTimechfb += executionTimeQuerychfb;
@@ -309,7 +310,7 @@ public class test {
 
                 ArrayList<byte[]> vhdsseResult = vhdsse.VHDSSE_Query_Server(query_key);
                 long endTimeQueryvhdsse = System.nanoTime(); // 记录结束时间
-                long executionTimeQueryvhdsse = (endTimeQueryvhdsse - startTimeQueryvhdsse); // 计算代码段的运行时间（纳秒）
+                long executionTimeQueryvhdsse = (endTimeQueryvhdsse - startTimeQueryvhdsse)/1000; // 计算代码段的运行时间（纳秒）
                 if (vhdsseResult!=null){
                     querySizevhdsse += vhdsseResult.size();
                     queryTimevhdsse += executionTimeQueryvhdsse;
@@ -318,13 +319,13 @@ public class test {
 
             }
             System.out.println("dprfMM查询通信开销为"+querySizeDprf/testTimes);
-            System.out.println("dprfMM平均每次查询用时(纳秒)" +queryTimeDprf/testTimes );
+            System.out.println("dprfMM平均每次查询用时(毫秒)" +queryTimeDprf/testTimes );
             System.out.println("dpMM查询通信开销为"+querySizeDp/testTimes);
-            System.out.println("dpMM平均每次查询用时(纳秒)" +queryTimeDp/testTimes );
+            System.out.println("dpMM平均每次查询用时(毫秒)" +queryTimeDp/testTimes );
             System.out.println("chfb查询通信开销为"+querySizechfb/testTimes);
-            System.out.println("chfb平均每次查询用时(纳秒)" +queryTimechfb/testTimes );
+            System.out.println("chfb平均每次查询用时(毫秒)" +queryTimechfb/testTimes );
             System.out.println("vhdsse查询通信开销为"+querySizevhdsse/testTimes);
-            System.out.println("vhdsse平均每次查询用时(纳秒)" +queryTimevhdsse/testTimes );
+            System.out.println("vhdsse平均每次查询用时(毫秒)" +queryTimevhdsse/testTimes );
 
         }
 

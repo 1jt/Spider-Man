@@ -79,7 +79,7 @@ public class VHDSSE implements Serializable {
 //        KV[] kv_list = Arrays.copyOfRange(SerialData.Serial_Raw_In(filename), 0, DATA_SIZE);
         KV[] kv_list = SerialData.Serial_Raw_In(filename);
         assert kv_list != null;
-        System.out.println("---------------------VHDSSE scheme on " + filename + "---------------------");
+        //System.out.println("---------------------VHDSSE scheme on " + filename + "---------------------");
         // 8
         int idx = 0;
         // 10-16

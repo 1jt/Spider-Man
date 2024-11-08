@@ -51,7 +51,7 @@ public class dprfMM implements Serializable {
         STORAGE_CUCKOO = (int) Math.floor((DATA_SIZE * (1 + alpha)));
 
         KV[] kv_list = SerialData.Serial_Raw_In(filename);
-        System.out.println("---------------------cuckoo hash scheme(dprfMM CCS'19) on " + filename + "---------------------");
+        //System.out.println("---------------------cuckoo hash scheme(dprfMM CCS'19) on " + filename + "---------------------");
         //setup phase
         cuckoo = new Cuckoo_Hash();
         assert kv_list != null;

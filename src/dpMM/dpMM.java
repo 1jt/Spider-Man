@@ -53,7 +53,7 @@ public class dpMM implements Serializable {
         assert kv_list != null;
         KL[] kl_list = tool.KV_2_KL(kv_list);
 
-        System.out.println("---------------------cuckoo hash scheme(dprfMM CCS'19) on " + filename + "---------------------");
+        //System.out.println("---------------------cuckoo hash scheme(dprfMM CCS'19) on " + filename + "---------------------");
 
         // 存储 l(key)
         CT = new Cuckoo_Hash();
