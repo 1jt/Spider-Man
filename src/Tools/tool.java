@@ -1,7 +1,11 @@
 package Tools;
 
+import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
+
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
@@ -99,6 +103,29 @@ public class tool {
             }
         }
         return kl_list.toArray(new KL[0]);
+    }
+
+    public static ArrayList<String> GetFileList(String s){
+        Path startPath = Paths.get(s); // 替换为你的目录路径
+        ArrayList<String> Filelist = new ArrayList<>();
+        try {
+            Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    Filelist.add(file.toString().replace('\\', '/')); // 将路径中的\替换为/
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Filelist;
+    }
+    //计算服务器存储开销
+    public static int GetSeverCost(Object data){
+        int datasize = 0;
+        datasize = (int) (ObjectSizeCalculator.getObjectSize(data));
+        return datasize;
     }
 
 

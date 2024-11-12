@@ -176,20 +176,45 @@ public class chFB implements Serializable {
     }
 
     public ArrayList<byte[]> QueryCost(String key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        // search bins
-        byte[] token = Hash.Get_SHA_256((Arrays.toString(twoChoiceHash.Get_K()) + key).getBytes(StandardCharsets.UTF_8));
+        byte[] token =  Hash.Get_SHA_256((Arrays.toString(twoChoiceHash.Get_K()) + key).getBytes(StandardCharsets.UTF_8));
         ArrayList<byte[]> result_server = new ArrayList<>();// 服务器搜索结果
+        ArrayList<String> result_client = new ArrayList<>();// 客户端最终结果
+        ArrayList<KV> unwanted = new ArrayList<>();// 写回的结果
         Set<Integer> bin = new java.util.HashSet<>();
-        for (int i = 0; i < l; i++) {
+        for(int i =0;i<l;i++){
             String token_0 = Arrays.toString(token) + i + 0;
             String token_1 = Arrays.toString(token) + i + 1;
             byte[] hash_0 = Hash.Get_SHA_256(token_0.getBytes(StandardCharsets.UTF_8));
             byte[] hash_1 = Hash.Get_SHA_256(token_1.getBytes(StandardCharsets.UTF_8));
-            bin.add(TwoChoiceHash.Map2Range(hash_0, (int) (s * Math.pow(2, h))));
-            bin.add(TwoChoiceHash.Map2Range(hash_1, (int) (s * Math.pow(2, h))));
+            bin.add(TwoChoiceHash.Map2Range(hash_0, (int) (s * Math.pow(2,h))));
+            bin.add(TwoChoiceHash.Map2Range(hash_1, (int) (s * Math.pow(2,h))));
         }
-        for (int i : bin) {
-            twoChoiceHash.Query((int) (i / Math.pow(2, h)), (int) (i % Math.pow(2, h)), result_server);
+        for (int i:bin) {
+            twoChoiceHash.Query((int) (i /  Math.pow(2,h)), (int) (i %  Math.pow(2,h)),result_server);
+        }
+
+        for (byte[] et:result_server) {
+            String string = new String(AESUtil.decrypt(twoChoiceHash.Get_K_enc(), et));
+            String[] kv = string.split(",");
+            if (kv[0].equals(key)){
+                result_client.add(kv[1]);
+            }else if (!kv[0].equals("dummy")){
+                unwanted.add(new KV(kv[0],kv[1]));
+            }
+        }
+        // Query stash and delete the key-value pair
+        Iterator<KV> iterator = Stash.iterator();
+        while (iterator.hasNext()) {
+            KV kv = iterator.next();
+            if (kv.key.equals(key)) {
+                result_client.add(kv.value);
+                iterator.remove();
+            }
+        }
+        if (!MM_st.containsKey(key) || (MM_st.get(key).getValue() == 0)){
+            twoChoiceHash.WriteBack(key,result_client,unwanted,bin);
+            Stash = twoChoiceHash.Get_Stash();
+            return result_server;
         }
         return result_server;
     }

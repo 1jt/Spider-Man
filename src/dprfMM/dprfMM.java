@@ -94,13 +94,6 @@ public class dprfMM implements Serializable {
         byte[] tk_key = GenSearchToken(search_key);
         // 服务器返回结果
         ArrayList<byte[]> ServerResult = Query_Cuckoo(tk_key);
-        // 解密结果
-        ArrayList<String> ClientResult = DecryptResult(ServerResult,search_key);
-        // 搜索stash
-        // 如果stash不为空
-        if (!cuckoo.Get_Stash().isEmpty()){
-            SearchStash(search_key,ClientResult);
-        }
         return ServerResult;
     }
 

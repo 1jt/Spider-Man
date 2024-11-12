@@ -216,9 +216,9 @@ public class test {
 
 
 //         test show
-        String fileStart = "Shuffle/DB_zipf";//对文件夹下所有文件遍历测试
+        String fileStart = "Shuffle/DB_random";//对文件夹下所有文件遍历测试
 
-        ArrayList<String> fileList = GetFileList(fileStart);
+        ArrayList<String> fileList = tool.GetFileList(fileStart);
         for (String s : fileList) {
             System.out.println("************************" + s + "*********************************");
             String filename = s;
@@ -228,27 +228,17 @@ public class test {
             dpMM dp = new dpMM(filename);
             chFB chfb = new chFB(filename);
             VHDSSE vhdsse = new VHDSSE(filename);
-            System.out.println("dprf服务器存储开销为" + GetSeverCost(dprf.cuckoo));
-            System.out.println("dpMM服务器存储开销为" + GetSeverCost(dp.Data));
-            System.out.println("chfb服务器存储开销为" + GetSeverCost(chfb.twoChoiceHash));
-            System.out.println("vhdsse服务器存储开销为" + GetSeverCost(vhdsse.EMM_buf) + GetSeverCost(vhdsse.EMM_stash));
+            System.out.println("dprf服务器存储开销为Byte: " + tool.GetSeverCost(dprf.cuckoo));
+            System.out.println("dpMM服务器存储开销为Byte: " + tool.GetSeverCost(dp.Data));
+            System.out.println("chfb服务器存储开销为Byte: " + tool.GetSeverCost(chfb.twoChoiceHash));
+            System.out.println("vhdsse服务器存储开销为Byte: " + tool.GetSeverCost(vhdsse.EMM_buf) + tool.GetSeverCost(vhdsse.EMM_stash));
             System.out.println("___________________________________________________________________________________________");
-
-            //Query
-            int querySizeDprf = 0;
-            long queryTimeDprf = 0;
-
-            int querySizeDp = 0;
-            long queryTimeDp = 0;
-
-            int querySizechfb = 0;
-            long queryTimechfb = 0;
-
-            int querySizevhdsse = 0;
-            long queryTimevhdsse = 0;
-
             int testTimes = 1000;
 
+            //Query
+
+            int querySizeDprf = 0;
+            long queryTimeDprf = 0;
             for (int i = 0; i < testTimes; i++) {
                 Random rd = new Random();
                 int index = rd.nextInt(dprf.DATA_SIZE / 8); //齐夫数据集 m = n /8
@@ -265,6 +255,9 @@ public class test {
                 }else i--;
 
             }
+
+            int querySizeDp = 0;
+            long queryTimeDp = 0;
             for (int i = 0; i < testTimes; i++) {
                 Random rd = new Random();
                 int index = rd.nextInt(dp.DATA_SIZE / 8); //齐夫数据集 m = n /8
@@ -282,6 +275,9 @@ public class test {
                 }else i--;
 
             }
+
+            int querySizechfb = 0;
+            long queryTimechfb = 0;
             for (int i = 0; i < testTimes; i++) {
                 Random rd = new Random();
                 int index = rd.nextInt(chfb.DATA_SIZE / 8); //齐夫数据集 m = n /8
@@ -291,15 +287,20 @@ public class test {
                 long startTimeQuerychfb = System.nanoTime(); // 记录开始时间
                 // 需要测试运行时间的代码段区间
                 ArrayList<byte[]> chfbResult = chfb.QueryCost(query_key);
-                ArrayList<String> chfbResult2 = chfb.Query(query_key);
+                //ArrayList<String> chfbResult2 = chfb.Query(query_key);
+
+
                 long endTimeQuerychfb = System.nanoTime(); // 记录结束时间
                 long executionTimeQuerychfb = (endTimeQuerychfb - startTimeQuerychfb)/1000; // 计算代码段的运行时间（纳秒）
-                if (chfbResult2!=null){
-                    querySizechfb += chfbResult2.size();
+                if (chfbResult!=null){
+                    querySizechfb += chfbResult.size();
                     queryTimechfb += executionTimeQuerychfb;
                 }else i--;
 
             }
+
+            int querySizevhdsse = 0;
+            long queryTimevhdsse = 0;
             for (int i = 0; i < testTimes; i++) {
                 Random rd = new Random();
                 int index = rd.nextInt(vhdsse.DATA_SIZE/ 8); //齐夫数据集 m = n /8
@@ -319,43 +320,23 @@ public class test {
 
             }
             System.out.println("dprfMM查询通信开销为"+querySizeDprf/testTimes);
-            System.out.println("dprfMM平均每次查询用时(毫秒)" +queryTimeDprf/testTimes );
+            System.out.println("dprfMM平均每次查询用时(微秒)" +queryTimeDprf/testTimes );
             System.out.println("dpMM查询通信开销为"+querySizeDp/testTimes);
-            System.out.println("dpMM平均每次查询用时(毫秒)" +queryTimeDp/testTimes );
+            System.out.println("dpMM平均每次查询用时(微秒)" +queryTimeDp/testTimes );
             System.out.println("chfb查询通信开销为"+querySizechfb/testTimes);
-            System.out.println("chfb平均每次查询用时(毫秒)" +queryTimechfb/testTimes );
+            System.out.println("chfb平均每次查询用时(微秒)" +queryTimechfb/testTimes );
             System.out.println("vhdsse查询通信开销为"+querySizevhdsse/testTimes);
-            System.out.println("vhdsse平均每次查询用时(毫秒)" +queryTimevhdsse/testTimes );
+            System.out.println("vhdsse平均每次查询用时(微秒)" +queryTimevhdsse/testTimes );
 
         }
 
 
 
 
+
     }
 
-    public static ArrayList<String> GetFileList(String s){
-        Path startPath = Paths.get(s); // 替换为你的目录路径
-        ArrayList<String> Filelist = new ArrayList<>();
-        try {
-            Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Filelist.add(file.toString().replace('\\', '/')); // 将路径中的\替换为/
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Filelist;
-    }
-    //计算服务器存储开销
-    public static int GetSeverCost(Object data){
-        int datasize = 0;
-        datasize = (int) (ObjectSizeCalculator.getObjectSize(data));
-        return datasize;
-    }
+
 
 
 }

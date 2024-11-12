@@ -13,7 +13,7 @@ import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 
 public class NewDVH_Test {
     public static void main(String[] args) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        String fileStart = "Shuffle/DB_zipf";//对文件夹下所有文件遍历测试
+        String fileStart = "Shuffle/DB_random";//对文件夹下所有文件遍历测试
         ArrayList<String> fileList = GetFileList(fileStart);
         for (String s : fileList) {
             System.out.println("************************" + s + "*********************************");
@@ -26,11 +26,13 @@ public class NewDVH_Test {
             long endTime = System.nanoTime(); // 记录结束时间
             long executionTime = (endTime - startTime) / 1000000; // 计算代码段的运行时间（毫秒）
             System.out.println("setup代码段的运行时间为: " + executionTime + " 毫秒");
-            System.out.println("服务器存储开销为" + GetSeverCost(Setup_NewDVH.Position));
+            System.out.println("服务器存储开销为KB: " + GetSeverCost(Setup_NewDVH.Position));
 
             //Query
             int size = NewDVH_Tool.Size(s);
             UpdateTest_NewDVH.New_DVH_TestQuery(Setup_NewDVH.Position, size);//测查询通信开销
+
+            Setup_NewDVH.Position.clear();
 
             //Update
             //UpdateTest_NewDVH.NewDVH_TestUpdate(Setup_NewDVH.Position,size); //测试更新功能实现
@@ -57,10 +59,10 @@ public class NewDVH_Test {
         return Filelist;
     }
     //计算服务器存储开销
-    public static int GetSeverCost(ArrayList<NodeSet> data){
-        int datasize = 0;
+    public static double GetSeverCost(ArrayList<NodeSet> data){
+        double datasize = 0;
         for (NodeSet nodeSet : data) {
-            datasize += (int) (ObjectSizeCalculator.getObjectSize(nodeSet.getNode().getData()));
+            datasize += (int)(ObjectSizeCalculator.getObjectSize(nodeSet.getNode().getData()));;
         }
         return datasize;
     }

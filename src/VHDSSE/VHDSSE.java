@@ -211,6 +211,7 @@ public class VHDSSE implements Serializable {
 
         return ServerResult;
     }
+
     public byte[] GenSearchToken(String search_key){
         return Hash.Get_SHA_256((search_key + Cuckoo_Hash.Get_K_d()).getBytes(StandardCharsets.UTF_8));
     }
