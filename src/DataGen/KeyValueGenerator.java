@@ -7,35 +7,44 @@ import Tools.SerialData;
 
 public class KeyValueGenerator {
     public static void main(String[] args) {
-//        char model = 'r'; // 'r' for random, 'z' for zipf
-        char model = 'r';
-        int numPairs = (int) Math.pow(2,20); // 键值对的总数
-        int numKeys = numPairs/8; // 键的数量
-        int maxVolume = (int) Math.pow(2,4); // 值的最大数量
 
-        double np = Math.ceil(Math.log(numPairs) / Math.log(2.0));
-        switch (model) {
-            case 'r':
-                RandomDistribution rd = new RandomDistribution(numPairs, maxVolume);
-                // print rd.distribution
-                for (int i = 0; i < rd.distribution.size(); i++) {
-                    System.out.print(rd.distribution.get(i) + " ");
+
+        for (int k = 10; k <=20; k = k+2) {
+            for (int j = 4; j < 9; j++) {
+                //        char model = 'r'; // 'r' for random, 'z' for zipf
+                char model = 'r';
+                int numPairs = (int) Math.pow(2,k); // 键值对的总数
+                int numKeys = numPairs/8; // 键的数量
+                int maxVolume = (int) Math.pow(2,j); // 值的最大数量
+
+                double np = Math.ceil(Math.log(numPairs) / Math.log(2.0));
+                switch (model) {
+                    case 'r':
+                        RandomDistribution rd = new RandomDistribution(numPairs, maxVolume);
+                        // print rd.distribution
+                        for (int i = 0; i < rd.distribution.size(); i++) {
+                            System.out.print(rd.distribution.get(i) + " ");
+                        }
+                        System.out.println();
+                        generateRandomKeyValuePairs(rd.distribution, "DB_random/Random_" + (int) np + "_" + (int) Math.ceil(Math.log(maxVolume) / Math.log(2.0)) + ".ser");
+                        break;
+                    case 'z':
+                        ZipfDistribution zipf = new ZipfDistribution(numPairs, numKeys);
+                        // print zipf.distribution
+//                for (int i = 0; i < zipf.distribution.size(); i++) {
+//                    System.out.print(zipf.distribution.get(i) + " ");
+//                }
+//                System.out.println();
+                        generateRandomKeyValuePairs(zipf.distribution, "DB_zipf/Zipf_" + (int) np + "_" + zipf.distribution.get(0) + ".ser");
+                        break;
+                    default:
+                        System.out.println("Invalid model");
                 }
-                System.out.println();
-                generateRandomKeyValuePairs(rd.distribution, "DB_random/Random_" + (int) np + "_" + (int) Math.ceil(Math.log(maxVolume) / Math.log(2.0)) + ".ser");
-                break;
-            case 'z':
-                ZipfDistribution zipf = new ZipfDistribution(numPairs, numKeys);
-                // print zipf.distribution
-                for (int i = 0; i < zipf.distribution.size(); i++) {
-                    System.out.print(zipf.distribution.get(i) + " ");
-                }
-                System.out.println();
-                generateRandomKeyValuePairs(zipf.distribution, "DB_zipf/Zipf_" + (int) np + "_" + zipf.distribution.get(0) + ".ser");
-                break;
-            default:
-                System.out.println("Invalid model");
+
+
+            }
         }
+
 
 
     }

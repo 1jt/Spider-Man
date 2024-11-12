@@ -13,28 +13,35 @@ import Tools.SerialData;
 
 public class Shuffle_ser {
     public static void main(String[] args) {
-        String fileName = "DB_random/Random_10_4.ser";
-        String[] temp = fileName.split("_|\\.|/");
-        // shuffle ser file
-        if (temp[temp.length-1].equals("ser")) {
-            String out_filePath = "Shuffle/" + fileName;  // 输出文件
-            KV[] kvs = SerialData.Serial_Raw_In(fileName);
-            // shuffle
-            assert kvs != null;
-            List<KV> kvlist = KVtoList(kvs);// KV to List
-            Collections.shuffle(kvlist); // 随机打乱List中的数据
-            KV[] kvs_shuffle = ListtoKV(kvlist); // List to KV
-            SerialData.Serial_Raw_Out(kvs_shuffle, out_filePath);
-        }   //  shuffle txt file
-        else if (temp[temp.length-1].equals("txt")) {
-            List<KV> lines = readLinesFromFile(fileName); // 读取txt文件内容到List中
-            String out_filePath = "Shuffle/" + fileName.substring(0,fileName.length()-4)+"_"+tool.KV_2_KL(ListtoKV(lines))[1].length+".ser"; // ser文件路径
-            // shuffle
-            Collections.shuffle(lines); // 随机打乱List中的数据
-            KV[] kvs_shuffle = ListtoKV(lines); // List to KV
-            SerialData.Serial_Raw_Out(kvs_shuffle, out_filePath);
-        } else {
-            System.out.println("Invalid file type");
+        String fileStart = "DB_random";//对文件夹下所有文件遍历测试
+
+        ArrayList<String> fileList = tool.GetFileList(fileStart);
+        for (String s : fileList) {
+            System.out.println(s);
+            String fileName = s;
+            String[] temp = fileName.split("_|\\.|/");
+            // shuffle ser file
+            if (temp[temp.length-1].equals("ser")) {
+                String out_filePath = "Shuffle/" + fileName;  // 输出文件
+                KV[] kvs = SerialData.Serial_Raw_In(fileName);
+                // shuffle
+                assert kvs != null;
+                List<KV> kvlist = KVtoList(kvs);// KV to List
+                Collections.shuffle(kvlist); // 随机打乱List中的数据
+                KV[] kvs_shuffle = ListtoKV(kvlist); // List to KV
+                SerialData.Serial_Raw_Out(kvs_shuffle, out_filePath);
+            }   //  shuffle txt file
+            else if (temp[temp.length-1].equals("txt")) {
+                List<KV> lines = readLinesFromFile(fileName); // 读取txt文件内容到List中
+                String out_filePath = "Shuffle/" + fileName.substring(0,fileName.length()-4)+"_"+tool.KV_2_KL(ListtoKV(lines))[1].length+".ser"; // ser文件路径
+                // shuffle
+                Collections.shuffle(lines); // 随机打乱List中的数据
+                KV[] kvs_shuffle = ListtoKV(lines); // List to KV
+                SerialData.Serial_Raw_Out(kvs_shuffle, out_filePath);
+            } else {
+                System.out.println("Invalid file type");
+            }
+
         }
     }
 
