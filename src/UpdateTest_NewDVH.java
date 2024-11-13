@@ -16,7 +16,7 @@ public class UpdateTest_NewDVH {
 
 
     //第一步查询，测试后,结果正确
-    public static void New_DVH_TestQuery(ArrayList<NodeSet> Position, int size) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public static void New_DVH_TestQuery(Map<MMPoint,TreeNode<byte[]>> hashMap, int size) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
 
         ArrayList<String> Result = new ArrayList<>();
 
@@ -31,20 +31,23 @@ public class UpdateTest_NewDVH {
             int judge_num = 0;
             for (int times = 0; times < Query_cycle_time; times++) {
                 Random rd = new Random();
-                int index = rd.nextInt(Position.size()/8); //齐夫数据集 m = n /8
-//                int index = 1;
+                int index = rd.nextInt(size); //齐夫数据集 m = n /8
+               //int index = 1;
                 String query_key = "Key" + index;
 
                 long startTime = System.nanoTime(); // 记录开始时间
                 // 需要测试运行时间的代码段区间
-                Result = Update_Query_NewDVH.Run(query_key, size, Position);
+                Result = Query_NewDVH.queryHashmap(query_key, size,hashMap);
                 //测试运行时间代码段区间
                 long endTime = System.nanoTime(); // 记录结束时间
                 double executionTime = (endTime - startTime)/1000000.0; // 计算代码段的运行时间（纳秒）
                 if (!Result.isEmpty()){
                     runtime += executionTime;
                     result_num += Result.size();
-                }else times -- ;
+                }else {
+                    times -- ;
+                    continue;
+                }
 
                 //输出查到的值，判断是否无损
                 double num = 0;

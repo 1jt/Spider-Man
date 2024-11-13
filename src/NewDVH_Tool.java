@@ -18,9 +18,10 @@ public class NewDVH_Tool {
     public static int Size(String filePath) throws IOException {
         int size;
         KV[] kvs = Serial_Raw_In(filePath);
+        int m = (int)Math.pow(2,getLastCharAsNumber(filePath));
         int n = kvs.length;
-        double c = 0.125;
-        size = (int) (c * n / 8);
+        double c = 1;
+        size = (int) (c * n / m);
         return size;
     }
 
@@ -36,6 +37,19 @@ public class NewDVH_Tool {
             }
         }
         return null;
+    }
+
+    public static TreeNode<byte[]> FindNode(int x,int y,Map<MMPoint,TreeNode<byte[]>> hashMap){
+        MMPoint mmPoint = new MMPoint(x,y);
+        return hashMap.get(mmPoint);
+    }
+
+    public static int getLastCharAsNumber(String str) throws NumberFormatException {//通过文件名获取volume.max
+        if (str == null || str.isEmpty()) {
+            throw new NumberFormatException("The string is null or empty.");
+        }
+        char lastChar = str.charAt(str.length() - 5);
+        return Character.getNumericValue(lastChar);
     }
 
     public static byte[] Encrypt(String key,String value) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

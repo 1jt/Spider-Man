@@ -30,9 +30,11 @@ public class NewDVH_Test {
 
             //Query
             int size = NewDVH_Tool.Size(s);
-            UpdateTest_NewDVH.New_DVH_TestQuery(Setup_NewDVH.Position, size);//测查询通信开销
+            UpdateTest_NewDVH.New_DVH_TestQuery(Setup_NewDVH.hashMap, size);//测查询通信开销
 
             Setup_NewDVH.Position.clear();
+            Setup_NewDVH.hashMap.clear();
+
 
             //Update
             //UpdateTest_NewDVH.NewDVH_TestUpdate(Setup_NewDVH.Position,size); //测试更新功能实现

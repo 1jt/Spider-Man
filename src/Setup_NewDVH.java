@@ -17,12 +17,9 @@ import Tools.*;
 // then press Enter. You can now see whitespace characters in your code.
 public class Setup_NewDVH {
     public static ArrayList<NodeSet> Position = new ArrayList<>();//存储所有NodeSet
-
+    public static Map<MMPoint,TreeNode<byte[]>> hashMap = new HashMap<>();//使用map能否更快
     public static void Test(String filePath) throws IOException, InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-
-
 //        System.out.println("----------" + filePath + " starts Setup calculation----------");
-
         int size = NewDVH_Tool.Size(filePath);
         KV[] kvs = NewDVH_Tool.Serial_Raw_In(filePath);//kv形式读取数据
         TreeNode<byte[]>[] roots = Roots.CreateRoots(size);//建立size个根节点
@@ -31,7 +28,7 @@ public class Setup_NewDVH {
         String kappa; // 每个关键词生成的密钥
         String dekey = NewDVH_Tool.EncryKey;//临时加密秘钥
         int root; // 关键词对应的根节点的编号
-        Map<MMPoint,TreeNode<byte[]>> hashMap = new HashMap<>();//使用map能否更快
+
         for (int i = 0; i < kvs.length; i++) {
             key = kvs[i].key;
             value = kvs[i].value;

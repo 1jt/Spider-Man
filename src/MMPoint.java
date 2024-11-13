@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.Objects;
 
 public class MMPoint implements Serializable {
     private int x;
@@ -23,5 +24,18 @@ public class MMPoint implements Serializable {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        MMPoint mmPoint = (MMPoint) object;
+        return x == mmPoint.x && y == mmPoint.y;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y);
     }
 }
