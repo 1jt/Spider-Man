@@ -59,8 +59,8 @@ public class NewDVH_Test {
         return Filelist;
     }
     //计算服务器存储开销
-    public static double GetSeverCost(ArrayList<NodeSet> data){
-        double datasize = 0;
+    public static int GetSeverCost(ArrayList<NodeSet> data){
+        int datasize = 0;
         for (NodeSet nodeSet : data) {
             datasize += (int)(ObjectSizeCalculator.getObjectSize(nodeSet.getNode().getData()));;
         }

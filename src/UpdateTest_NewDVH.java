@@ -24,7 +24,7 @@ public class UpdateTest_NewDVH {
         int Query_cycle_time = 100;//查询关键字个数
         int avage_num = 0;
         int max_num = 0;
-        long runtime= 0;
+        double runtime= 0;
 
         for (int Query_num_times = 0; Query_num_times < Query_num; Query_num_times++) {
             int result_num = 0;
@@ -40,7 +40,7 @@ public class UpdateTest_NewDVH {
                 Result = Update_Query_NewDVH.Run(query_key, size, Position);
                 //测试运行时间代码段区间
                 long endTime = System.nanoTime(); // 记录结束时间
-                long executionTime = (endTime - startTime); // 计算代码段的运行时间（纳秒）
+                double executionTime = (endTime - startTime)/1000000.0; // 计算代码段的运行时间（纳秒）
                 if (!Result.isEmpty()){
                     runtime += executionTime;
                     result_num += Result.size();
@@ -66,7 +66,7 @@ public class UpdateTest_NewDVH {
             max_num = Math.max(max_num, judge_num);
             avage_num += result_num / Query_cycle_time;
         }
-        System.out.println("平均volume = " + avage_num / Query_num + "，最大暴露真实数量查询个数占百分比" + max_num + "，平均查询一次所用时间（纳秒）" + runtime/10000);
+        System.out.println("平均volume = " + avage_num / Query_num + "，最大暴露真实数量查询个数占百分比" + max_num + "，平均查询一次所用时间（毫秒）" + runtime/10000);
 
     }
 

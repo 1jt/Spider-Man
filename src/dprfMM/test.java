@@ -233,7 +233,7 @@ public class test {
             System.out.println("chfb服务器存储开销为Byte: " + tool.GetSeverCost(chfb.twoChoiceHash));
             System.out.println("vhdsse服务器存储开销为Byte: " + tool.GetSeverCost(vhdsse.EMM_buf) + tool.GetSeverCost(vhdsse.EMM_stash));
             System.out.println("___________________________________________________________________________________________");
-            int testTimes = 1000;
+            int testTimes = 10000;
 
             //Query
 
